@@ -63,9 +63,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user.js'
 import type { FormInstance, FormRules } from 'element-plus'
-import { Lock, User, Monitor } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
@@ -90,28 +89,27 @@ const loginRules = reactive<FormRules>({
 const handleLogin = async () => {
   if (!loginFormRef.value) return
   
-  try {
-    loading.value = true
-    
-    // 验证表单
-    await loginFormRef.value.validate()
-    
-    // 登录
-    await userStore.login(loginForm)
-    ElMessage.success('登录成功')
-    
-    // 获取用户信息
-    await userStore.getUserInfo()
-    
-    // 登录成功后跳转
-    const redirectPath = route.query.redirect as string
-    router.push(redirectPath || '/')
-  } catch (error: any) {
-    console.error('登录失败:', error)
-    ElMessage.error(error.message || '登录失败')
-  } finally {
-    loading.value = false
-  }
+  await loginFormRef.value.validate(async (valid) => {
+    if (valid) {
+      loading.value = true
+      try {
+        // 调用store的登录方法
+        await userStore.login(loginForm)
+        
+        // 添加这行：登录成功后跳转到首页
+        router.push({ path: '/' })
+        
+        ElMessage.success('登录成功')
+      } catch (error) {
+        console.error('登录失败:', error)
+        ElMessage.error('登录失败: ' + (error instanceof Error ? error.message : '未知错误'))
+      } finally {
+        loading.value = false
+      }
+    } else {
+      return false
+    }
+  })
 }
 
 // 自动聚焦到用户名输入框

@@ -61,7 +61,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Document, Folder, User, Cpu } from '@element-plus/icons-vue'
 
 interface CardData {
   totalCount: number

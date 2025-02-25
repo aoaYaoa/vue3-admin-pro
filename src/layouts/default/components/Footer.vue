@@ -13,6 +13,12 @@
   </footer>
 </template>
 
+<script>
+export default {
+  name: 'Footer'
+}
+</script>
+
 <script setup>
 import { computed } from 'vue'
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="topic-container">  
+  <div class="topic-container">
     <el-card>
       <template #header>
         <div class="card-header">

@@ -80,19 +80,12 @@
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
               
-              <!-- 可以在这里添加代码示例 -->
-              <div class="code-example" v-if="false">
+              <div v-if="currentTopic.code" class="code-example">
                 <el-divider content-position="left">代码示例</el-divider>
-                <pre class="code-block">
-// 代码示例将在这里显示
-.example {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-                </pre>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
               </div>
             </div>
           </div>
@@ -105,256 +98,29 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import CodeBlock from '@/components/CodeBlock.vue'
 
 interface Topic {
   id: number
   title: string
   tags: string[]
   difficulty: string
+  answer?: string
+  code?: string
 }
-
-// HTML+CSS 题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 1,
-    title: '什么是重绘，什么是回流（reflow）？',
-    tags: ['DOM', '性能优化'],
-    difficulty: '中等'
-  },
-  {
-    id: 2,
-    title: 'Margin 塌陷问题如何解决？',
-    tags: ['CSS', '布局'],
-    difficulty: '简单'
-  },
-  {
-    id: 3,
-    title: '如何隐藏一个元素',
-    tags: ['CSS', '显示隐藏'],
-    difficulty: '简单'
-  },
-  {
-    id: 4,
-    title: 'overflow 不同值的区别。',
-    tags: ['CSS', '样式'],
-    difficulty: '简单'
-  },
-  {
-    id: 5,
-    title: '三栏布局的实现方式（圣杯布局、双飞翼布局等）',
-    tags: ['CSS', '布局'],
-    difficulty: '中等'
-  },
-  {
-    id: 6,
-    title: 'calc() 方法',
-    tags: ['CSS', '计算'],
-    difficulty: '简单'
-  },
-  {
-    id: 7,
-    title: '实现一个固定长宽div 在各个浏览器下水平垂直居中',
-    tags: ['CSS', '布局', '兼容性'],
-    difficulty: '中等'
-  },
-  {
-    id: 8,
-    title: '渐进增强（progressive enhancement）和优雅降级（graceful degradation）',
-    tags: ['CSS', '兼容性', '最佳实践'],
-    difficulty: '中等'
-  },
-  {
-    id: 9,
-    title: 'iframe 有哪些优缺点及使用场景？',
-    tags: ['HTML', '嵌入'],
-    difficulty: '简单'
-  },
-  {
-    id: 10,
-    title: 'CSS 盒子模型',
-    tags: ['CSS', '基础'],
-    difficulty: '简单'
-  },
-  {
-    id: 11,
-    title: 'HTML5 的特性',
-    tags: ['HTML5', '新特性'],
-    difficulty: '中等'
-  },
-  {
-    id: 12,
-    title: 'CSS3 的特性',
-    tags: ['CSS3', '新特性'],
-    difficulty: '中等'
-  },
-  {
-    id: 13,
-    title: 'CSS 中选择器的优先级',
-    tags: ['CSS', '选择器'],
-    difficulty: '中等'
-  },
-  {
-    id: 14,
-    title: 'HTML5 input 元素 type 属性值',
-    tags: ['HTML5', '表单'],
-    difficulty: '简单'
-  },
-  {
-    id: 15,
-    title: 'CSS 中属性的继承性',
-    tags: ['CSS', '继承'],
-    difficulty: '中等'
-  },
-  {
-    id: 16,
-    title: '画一条 0.5px 的线',
-    tags: ['CSS', '技巧'],
-    difficulty: '中等'
-  },
-  {
-    id: 17,
-    title: 'position 的值',
-    tags: ['CSS', '定位'],
-    difficulty: '简单'
-  },
-  {
-    id: 18,
-    title: '什么是浮动，浮动会引起什么问题，如何清除浮动？',
-    tags: ['CSS', '浮动'],
-    difficulty: '中等'
-  },
-  {
-    id: 19,
-    title: 'line-height 和 height 的区别',
-    tags: ['CSS', '文本'],
-    difficulty: '简单'
-  },
-  {
-    id: 20,
-    title: '设置一个元素的背景颜色',
-    tags: ['CSS', '样式'],
-    difficulty: '简单'
-  },
-  {
-    id: 21,
-    title: 'inline-block、inline 和 block 的区别',
-    tags: ['CSS', '布局'],
-    difficulty: '简单'
-  },
-  {
-    id: 22,
-    title: '为什么 img 是 inline 但有 width 和 height',
-    tags: ['HTML', 'CSS', '置换元素'],
-    difficulty: '中等'
-  },
-  {
-    id: 23,
-    title: 'box-sizing 的作用，如何使用',
-    tags: ['CSS', '盒模型'],
-    difficulty: '简单'
-  },
-  {
-    id: 24,
-    title: 'CSS 实现动画',
-    tags: ['CSS', '动画'],
-    difficulty: '中等'
-  },
-  {
-    id: 25,
-    title: 'transition 和 animation 的区别',
-    tags: ['CSS', '动画'],
-    difficulty: '中等'
-  },
-  {
-    id: 26,
-    title: '如何实现在某个容器中垂直居中一个元素',
-    tags: ['CSS', '布局', '居中'],
-    difficulty: '中等'
-  },
-  {
-    id: 27,
-    title: '如何改变一个 DOM 元素的字体颜色',
-    tags: ['CSS', '样式'],
-    difficulty: '简单'
-  },
-  {
-    id: 28,
-    title: '相对布局和绝对布局，position 属性的理解',
-    tags: ['CSS', '定位'],
-    difficulty: '中等'
-  },
-  {
-    id: 29,
-    title: '弹性盒子 flex 布局',
-    tags: ['CSS', '布局'],
-    difficulty: '中等'
-  },
-  {
-    id: 30,
-    title: 'Less 和 SCSS 的区别',
-    tags: ['CSS', '预处理器'],
-    difficulty: '中等'
-  },
-  {
-    id: 31,
-    title: 'CSS3 伪类，伪元素',
-    tags: ['CSS3', '选择器'],
-    difficulty: '中等'
-  },
-  {
-    id: 32,
-    title: '::before 和 ::after 中双冒号的作用',
-    tags: ['CSS', '伪元素'],
-    difficulty: '中等'
-  },
-  {
-    id: 33,
-    title: '响应式布局的实现方案',
-    tags: ['CSS', '响应式设计'],
-    difficulty: '中等'
-  },
-  {
-    id: 34,
-    title: 'link 标签和 import 标签的区别',
-    tags: ['HTML', 'CSS', '性能'],
-    difficulty: '中等'
-  },
-  {
-    id: 35,
-    title: '块元素、行元素、置换元素的区别',
-    tags: ['HTML', 'CSS', '布局'],
-    difficulty: '中等'
-  },
-  {
-    id: 36,
-    title: '单行元素的文本省略号如何实现',
-    tags: ['CSS', '文本'],
-    difficulty: '简单'
-  },
-  {
-    id: 37,
-    title: 'HTML 语义化标签',
-    tags: ['HTML', '语义化'],
-    difficulty: '简单'
-  },
-  {
-    id: 38,
-    title: 'px, rpx, vw, vh, rem 的区别',
-    tags: ['CSS', '单位'],
-    difficulty: '中等'
-  }
-])
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -446,12 +212,60 @@ h2 {
   color: #606266;
 }
 
-.code-block {
-  background: #f5f7fa;
-  padding: 15px;
-  border-radius: 4px;
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(ul), .markdown-content :deep(ol) {
+  padding-left: 1.5em;
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(li) {
+  margin: 0.3em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
   font-family: 'Courier New', monospace;
-  font-size: 14px;
+  font-size: 0.9em;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
   overflow-x: auto;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 4px solid #ddd;
+  padding: 0 1em;
+  color: #666;
+  margin: 1em 0;
+}
+
+.code-example {
+  margin-top: 20px;
 }
 </style> 

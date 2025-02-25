@@ -108,27 +108,18 @@ router.beforeEach((to, from, next) => {
   
   // 获取用户信息
   const userStore = useUserStore()
-  const isAuthenticated = userStore.isLoggedIn
   
-  // 如果访问登录页且已登录，重定向到首页
-  if (to.path === '/login' && isAuthenticated) {
-    next({ path: '/' })
-    NProgress.done()
-    return
+  // 如果有 token，认为已登录
+  const isLoggedIn = !!userStore.token
+  
+  // 如果访问的是登录页
+  if (to.path === '/login') {
+    // 已登录则跳转到首页，未登录则继续访问登录页
+    isLoggedIn ? next('/') : next()
+  } else {
+    // 访问非登录页，已登录则通过，未登录则跳转到登录页
+    isLoggedIn ? next() : next('/login')
   }
-  
-  // 如果访问需要认证的页面且未登录，重定向到登录页并记录重定向路径
-  if (!isAuthenticated && to.path !== '/login') {
-    next({ 
-      path: '/login', 
-      query: { redirect: to.fullPath } 
-    })
-    NProgress.done()
-    return
-  }
-  
-  // 正常处理路由
-  next()
 })
 
 // 路由后置守卫

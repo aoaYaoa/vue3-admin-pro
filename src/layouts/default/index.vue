@@ -27,16 +27,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useAppStore } from '@/stores/app'
+import { useUserStore } from '@/stores/user.js'
+import { useAppStore } from '@/stores/app.js'
 import Sidebar from './components/Sidebar.vue'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import AppMain from './components/AppMain.vue'
 import Breadcrumb from './components/Breadcrumb.vue'
-import { User, ArrowDown, SwitchButton } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()

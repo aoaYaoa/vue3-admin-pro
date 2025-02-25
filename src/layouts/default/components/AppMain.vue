@@ -13,6 +13,12 @@
   </section>
 </template>
 
+<script lang="ts">
+export default {
+  name: 'AppMain'
+}
+</script>
+
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 

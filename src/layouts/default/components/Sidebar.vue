@@ -138,7 +138,7 @@ const filteredRoutes = computed(() => {
 })
 
 // 处理菜单项的图标
-const getIcon = (icon) => {
+const getIcon = (icon: string) => {
   if (!icon) return DocumentIcon
   
   // 图标映射
