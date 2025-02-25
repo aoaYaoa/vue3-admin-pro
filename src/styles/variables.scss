@@ -1,0 +1,62 @@
+:root {
+  // 主色系
+  --primary-color: #009ef7; // 明亮的蓝色
+  --success-color: #67C23A; // 清新绿
+  --warning-color: #E6A23C; // 活力橙
+  --danger-color: #F56C6C; // 警示红
+  --info-color: #909399;   // 中性灰
+
+  // 文字颜色
+  --text-color: #303133;    // 主文字
+  --text-secondary: #606266; // 次要文字
+  --text-placeholder: #C0C4CC; // 占位符
+
+  // 边框颜色
+  --border-color: #DCDFE6; // 常规边框
+  --border-light: #E4E7ED; // 浅色边框
+
+  // 背景颜色
+  --bg-color: #f5f8fa;     // 浅灰背景
+  --bg-secondary: #FFFFFF; // 卡片背景
+  --bg-hover: #f5f8fa;     // 悬停背景
+  --bg-hover-dark: #eef3f7; // 深色悬停背景
+  --bg-hover-darker: #e9edf1; // 更深悬停背景
+
+  // 侧边栏
+  --sidebar-bg: #1e1e2d;   // 深蓝黑色背景
+  --sidebar-text: #9899ac;  // 浅灰色文字
+  --sidebar-active: #1b1b28; // 深色选中背景
+  --sidebar-hover: #1b1b28;  // 深色悬停背景
+  --menu-active-text: #ffffff; // 选中文字颜色
+
+  // 导航栏
+  --navbar-bg: #ffffff;     // 纯白
+  --navbar-height: 60px;
+
+  // 过渡动画
+  --transition-time: 0.3s;
+  --sidebar-transition: width var(--transition-time) cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  // 滚动条相关
+  --scrollbar-bottom-padding: 60px;
+}
+
+// 暗色主题
+[data-theme='dark'] {
+  --primary-color: #409EFF;
+  --bg-color: #1A1A1A;     // 深灰
+  --bg-secondary: #242424; // 更深的灰
+  --text-color: #E5EAF3;   // 浅灰
+  --border-color: #434343; // 深灰边框
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-hover-dark: rgba(255, 255, 255, 0.08);
+  --bg-hover-darker: rgba(255, 255, 255, 0.12);
+  --sidebar-bg: #141414;   // 接近黑色
+  --navbar-bg: #141414;
+}
+
+// 可以在本文件底部添加直接的样式覆盖
+.el-scrollbar__view {
+  padding-bottom: var(--scrollbar-bottom-padding) !important;
+} 

@@ -1,0 +1,15 @@
+/* 通用图标样式 */
+.el-icon-home::before { content: "\e7c6"; }
+.el-icon-setting::before { content: "\e78e"; }
+.el-icon-user::before { content: "\e7aa"; }
+.el-icon-key::before { content: "\e7b9"; }
+.el-icon-document::before { content: "\e785"; }
+.el-icon-code::before { content: "\e792"; }
+.el-icon-monitor::before { content: "\e839"; }
+.el-icon-view::before { content: "\e6ce"; }
+.el-icon-cpu::before { content: "\e902"; }
+.el-icon-connection::before { content: "\e7e0"; }
+.el-icon-coin::before { content: "\e78b"; }
+.el-icon-box::before { content: "\e79c"; }
+.el-icon-terminal::before { content: "\e739"; }
+.el-icon-suitcase::before { content: "\e79d"; } 
