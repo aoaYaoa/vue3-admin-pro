@@ -137,6 +137,8 @@ console.log('Current route:', route.path)
 <style scoped>
 .topic-container {
   padding: 20px;
+  height: 100%;
+  min-height: calc(100% - 40px);
 }
 
 .card-header {

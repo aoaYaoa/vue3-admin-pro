@@ -1,15 +1,12 @@
 <template>
   <section class="app-main">
-    <!-- 移除页面标题 H1 元素 -->
-    <div class="app-main-content">
-      <router-view v-slot="{ Component }">
-        <transition name="fade-transform" mode="out-in">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </transition>
-      </router-view>
-    </div>
+    <router-view v-slot="{ Component }">
+      <transition name="fade-transform" mode="out-in">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
+    </router-view>
   </section>
 </template>
 
@@ -25,24 +22,26 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .app-main {
+  min-height: calc(100vh - 50px - 40px);
   width: 100%;
-  padding: 0;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-}
-
-.app-main-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 20px;
-  background-color: #fff;
-  border-radius: 4px;
-  padding: 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  position: relative;
+  // overflow: auto;
+  // padding: 20px;
   box-sizing: border-box;
+
+  :deep(.el-card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :deep(.el-card__body) {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
 }
 
 /* 页面切换动画 */

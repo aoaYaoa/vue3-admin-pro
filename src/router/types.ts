@@ -1,12 +1,16 @@
 import type { RouteRecordRaw } from 'vue-router'
+import type { IconConfig } from '@/utils/icons'
 
-export interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'children'> {
+// 扩展 meta 类型
+interface RouteMeta {
+  title?: string
+  icon?: IconConfig
+  activeMenu?: string
+  hidden?: boolean
+}
+
+// 扩展路由记录类型
+export interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta' | 'children'> {
+  meta?: RouteMeta
   children?: AppRouteRecordRaw[]
-  meta?: {
-    title?: string
-    icon?: string
-    roles?: string[]
-    hidden?: boolean
-    affix?: boolean
-  }
 } 

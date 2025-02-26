@@ -1,76 +1,56 @@
 import { defineStore } from 'pinia'
-import router from '@/router'
-import { ref, computed } from 'vue'
+import { login as userLogin, getUserInfo } from '@/api/user'
+import type { LoginRequest } from '@/api/types'
 
-export const useUserStore = defineStore('user', () => {
-  const token = ref(localStorage.getItem('token') || '')
-  const name = ref('')
-  const avatar = ref('')
-  const roles = ref<string[]>([])
-  const routes = ref<any[]>([])
-  const userInfo = ref({})
+interface UserInfo {
+  name: string
+  roles: string[]
+}
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    token: '',
+    userInfo: {
+      name: '',
+      roles: []
+    } as UserInfo
+  }),
   
-  // 判断用户是否已登录
-  const isLoggedIn = computed(() => !!token.value)
+  getters: {
+    isLoggedIn: (state) => !!state.token
+  },
   
-  // 登录
-  const login = async (loginForm: { username: string, password: string }) => {
-    // 这里应该是实际的登录API调用
-    // 为了示例，使用模拟数据
-    return new Promise<void>((resolve, reject) => {
-      // 模拟验证
-      if (loginForm.username === 'admin' && loginForm.password === '123456') {
-        const newToken = 'admin_token_' + Date.now()
-        token.value = newToken
-        localStorage.setItem('token', newToken)
-        resolve()
-      } else {
-        reject(new Error('用户名或密码错误'))
+  actions: {
+    async login(userInfo: LoginRequest) {
+      try {
+        // 清除旧token
+        this.$reset()
+        
+        // 登录获取新token
+        const { token } = await userLogin(userInfo)
+        this.token = token
+        localStorage.setItem('token', token)
+
+        // 获取用户信息
+        const userInfoData = await getUserInfo()
+        this.userInfo.name = userInfoData.name
+        this.userInfo.roles = userInfoData.roles
+
+        return true
+      } catch (error) {
+        this.$reset()
+        throw error
       }
-    })
-  }
-  
-  // 获取用户信息
-  const getUserInfo = async () => {
-    // 模拟获取用户信息
-    name.value = 'Admin'
-    avatar.value = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
-    roles.value = ['admin']
+    },
     
-    return {
-      name: name.value,
-      avatar: avatar.value,
-      roles: roles.value
+    async logout() {
+      this.$reset()
+      localStorage.removeItem('token')
     }
-  }
-  
-  // 重置Token
-  const resetToken = () => {
-    token.value = ''
-    name.value = ''
-    avatar.value = ''
-    roles.value = []
-    localStorage.removeItem('token')
-  }
-  
-  // 登出
-  const logout = async () => {
-    resetToken()
-    router.push('/login')
-  }
-  
-  return {
-    token,
-    name,
-    avatar,
-    roles,
-    routes,
-    userInfo,
-    isLoggedIn,
-    login,
-    getUserInfo,
-    resetToken,
-    logout
+  },
+  persist: {
+    key: 'user',
+    paths: ['token', 'userInfo']
   }
 })
 

@@ -3,6 +3,7 @@
  * 集中管理所有菜单图标的样式和显示
  */
 
+import { markRaw } from 'vue'
 // 图标配置定义
 export interface IconConfig {
   html: string;      // 图标的HTML内容
@@ -11,91 +12,99 @@ export interface IconConfig {
 
 // 全局菜单图标配置
 export const menuIcons: Record<string, IconConfig> = {
-  // 前端相关
+  // 系统相关
+  'system': {
+    html: '⚙️',
+    class: 'system-icon'
+  },
+  
+  // DevOps
+  'devops': {
+    html: '🔄',
+    class: 'devops-icon'
+  },
+  
+  // 前端基础
   'html-css': {
-    html: '<span class="html-icon">&lt;/&gt;</span>',
-    class: 'html-icon-wrapper'
+    html: '&lt;/&gt;',
+    class: 'html-icon'
   },
   'javascript': {
-    html: '<span class="js-icon">JS</span>',
-    class: 'js-icon-wrapper'
+    html: 'JS',
+    class: 'js-icon'
   },
   'typescript': {
-    html: '<span class="ts-icon">TS</span>',
-    class: 'ts-icon-wrapper'
+    html: 'TS',
+    class: 'ts-icon'
   },
+  
+  // 框架
   'vue': {
-    html: '<span class="vue-text">V</span>',
+    html: 'v',
     class: 'vue-icon'
   },
   'react': {
-    html: '<span class="react-text">⚛</span>',
+    html: '⚛️',
     class: 'react-icon'
   },
   
-  // 新增更丰富的图标
-  'algorithm': {
-    html: '📊',
-    class: 'algorithm-icon'
-  },
-  'security': {
-    html: '🔒',
-    class: 'security-icon'
-  },
-  'mobile': {
-    html: '📱',
-    class: 'mobile-icon'
-  },
-  'ai': {
-    html: '🧠',
-    class: 'ai-icon'
-  },
-  
-  // 保留其他现有图标...
-  'coding': {
-    html: '💻'
-  },
+  // 工程化和性能
   'engineering': {
-    html: '🔧'
-  },
-  'browser': {
-    html: '🌎'
+    html: '🛠️',
+    class: 'engineering-icon'
   },
   'performance': {
-    html: '⚡'
+    html: '⚡',
+    class: 'performance-icon'
   },
-  'design-pattern': {
-    html: '📐'
+  'flutter': {
+    html: 'f',
+    class: 'flutter-icon'
   },
-  
-  // 后端与系统
-  'os': {
-    html: '💾'
+  // 浏览器和网络
+  'browser': {
+    html: '🌐',
+    class: 'browser-icon'
   },
   'network': {
-    html: '🌐'
-  },
-  'devops': {
-    html: '🔄'
-  },
-  'server': {
-    html: '🖥️'
-  },
-  'database': {
-    html: '🗃️'
+    html: '🔌',
+    class: 'network-icon'
   },
   
-  // 系统菜单
-  'dashboard': {
-    html: '🏠'
+  // 编程和设计
+  'coding': {
+    html: '💻',
+    class: 'coding-icon'
   },
-  'system': {
-    html: '⚙️'
+  'design-pattern': {
+    html: '📐',
+    class: 'design-icon'
+  },
+  
+  // 系统和服务
+  'os': {
+    html: '💿',
+    class: 'os-icon'
+  },
+  'server': {
+    html: '🖥️',
+    class: 'server-icon'
+  },
+  'database': {
+    html: '🗄️',
+    class: 'database-icon'
+  },
+  
+  // 业务相关
+  'business': {
+    html: '💼',
+    class: 'business-icon'
   },
   
   // 默认图标
   'default': {
-    html: '📑'
+    html: '📄',
+    class: 'default-icon'
   }
 };
 
@@ -104,110 +113,63 @@ export const menuIcons: Record<string, IconConfig> = {
  * @param title 菜单标题
  * @returns 图标配置对象
  */
-export function getIconConfig(title: string): IconConfig {
-  if (!title) return menuIcons['default'];
+function getIconConfig(title: string): IconConfig {
+
   
-  // 精确匹配标题
-  const exactMatchMap: Record<string, string> = {
-    'HTML + CSS 题目': 'html-css',
-    'Javascript 题目': 'javascript',
-    'Typescript 题目': 'typescript',
-    '代码编程 题目': 'coding',
-    'Vue 生态 题目': 'vue',
-    'React 生态 题目': 'react',
-    '前端构建 & 工程化 题目': 'engineering',
-    '浏览器 题目': 'browser',
-    '前端性能 题目': 'performance',
-    '设计模式 题目': 'design-pattern',
-    '操作系统 题目': 'os',
-    '计算机网络 题目': 'network',
-    'DevOps 题目': 'devops',
-    '服务端 题目': 'server',
-    '数据库 题目': 'database',
-    '首页': 'dashboard',
-    '系统管理': 'system'
-  };
+  if (!title) {
   
-  // 尝试精确匹配
-  const exactKey = exactMatchMap[title];
-  if (exactKey && menuIcons[exactKey]) {
-    return menuIcons[exactKey];
+    return menuIcons['default']
   }
   
-  // 模糊匹配
-  const titleLower = title.toLowerCase();
+  // 精确匹配映射 - 确保所有可能的标题都在这里列出
+  const exactMatchMap: Record<string, string> = {
+    'HTML/CSS': 'html-css',
+    'JavaScript': 'javascript',
+    'TypeScript': 'typescript',
+    'Vue': 'vue',
+    'React': 'react',
+    'devops': 'devops',
+    'devops 题目': 'devops',
+    '编程题': 'coding',
+    '工程化': 'engineering',
+    'flutter': 'flutter',
+    '浏览器': 'browser',
+    '性能优化': 'performance',
+    '设计模式': 'design-pattern',
+    '操作系统': 'os',
+    '计算机网络': 'network',
+    '服务端': 'server',
+    '数据库': 'database',
+    '业务场景': 'business',
+    '系统管理': 'system',
+    // 添加子菜单的标题映射
+    'HTML/CSS 题目': 'html-css',
+    'JavaScript 题目': 'javascript',
+    'TypeScript 题目': 'typescript',
+    'Vue 题目': 'vue',
+    'React 题目': 'react',
+    '编程题 题目': 'coding',
+    '工程化 题目': 'engineering',
+    'flutter 题目': 'flutter',
+    '浏览器 题目': 'browser',
+    '性能优化 题目': 'performance',
+    '设计模式 题目': 'design-pattern',
+    '操作系统 题目': 'os',
+    '网络 题目': 'network',
+    '服务端 题目': 'server',
+    '数据库 题目': 'database',
+    '业务场景 题目': 'business'
+  }
   
-  if (titleLower.includes('html') || titleLower.includes('css')) return menuIcons['html-css'];
-  if (titleLower.includes('javascript')) return menuIcons['javascript'];
-  if (titleLower.includes('typescript')) return menuIcons['typescript'];
-  if (titleLower.includes('vue')) return menuIcons['vue'];
-  if (titleLower.includes('react')) return menuIcons['react'];
-  if (titleLower.includes('编程')) return menuIcons['coding'];
-  if (titleLower.includes('工程化') || titleLower.includes('构建')) return menuIcons['engineering'];
-  if (titleLower.includes('浏览器')) return menuIcons['browser'];
-  if (titleLower.includes('性能')) return menuIcons['performance'];
-  if (titleLower.includes('设计模式')) return menuIcons['design-pattern'];
-  if (titleLower.includes('操作系统')) return menuIcons['os'];
-  if (titleLower.includes('网络')) return menuIcons['network'];
-  if (titleLower.includes('devops')) return menuIcons['devops'];
-  if (titleLower.includes('服务端')) return menuIcons['server'];
-  if (titleLower.includes('数据库')) return menuIcons['database'];
-  if (titleLower.includes('系统')) return menuIcons['system'];
+  // 尝试精确匹配
+  const key = exactMatchMap[title]
+  if (key && menuIcons[key]) {
   
-  // 返回默认图标
-  return menuIcons['default'];
+    return menuIcons[key]
+  }
+  
+  
+  return menuIcons['default']
 }
 
-// 图标映射表 - 使用SVG图标名称
-export const iconMap = {
-  // 系统图标
-  dashboard: 'dashboard',
-  system: 'system',
-  user: 'user',
-  role: 'role',
-  
-  // 技术主题图标
-  html: 'html',
-  javascript: 'javascript',
-  typescript: 'typescript',
-  vue: 'vue',
-  react: 'react',
-  database: 'database',
-  network: 'network',
-  engineering: 'engineering',
-  server: 'server',
-  coding: 'coding',
-  business: 'business',
-  browser: 'browser',
-  performance: 'performance',
-  design: 'design',
-  os: 'os',
-  devops: 'devops'
-}
-
-/**
- * 获取图标
- * @param name 图标名称
- * @returns 图标名称
- */
-export function getIcon(name: string): string {
-  if (!name) return ''
-  
-  // 返回映射中的图标名称
-  return iconMap[name] || 'document' // 默认图标
-}
-
-/**
- * 根据路径获取图标名称
- * @param path 路径
- * @returns 图标名称
- */
-export function getIconByPath(path: string): string {
-  if (!path) return 'document'
-  
-  // 提取路径的最后一段
-  const segment = path.split('/').pop() || ''
-  
-  // 返回映射的图标名称或默认图标
-  return iconMap[segment] || 'document'
-} 
+export default getIconConfig

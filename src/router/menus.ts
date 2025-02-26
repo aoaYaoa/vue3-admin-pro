@@ -1,556 +1,304 @@
 import type { AppRouteRecordRaw } from './types'
-import { 
-  HomeFilled, 
-  Setting, 
-  User, 
-  List,
-  InfoFilled,
-  Cpu,
-  Refresh,
-  ChatLineRound,
-  Monitor,
-  Basketball,
-  Box,
-  DataAnalysis,
-  Briefcase,
-  Document,
-  Collection,
-  Connection,
-  Menu,
-  Key,
-  Postcard,
-  Promotion,
-  Edit,
-  Notebook,
-  DataLine,
-  Grid,
-  Moon,
-  TrendCharts,
-  Share,
-  Platform,
-  Reading,
-  Clock,
-  Operation,
-  Files
-} from '@element-plus/icons-vue'
-import { h, defineComponent, markRaw, shallowRef } from 'vue'
-
-// 添加这行来定义Layout组件
+import getIconConfig, { menuIcons } from '@/utils/icons'
+import { defineComponent } from 'vue'
+// 定义Layout组件
 const Layout = () => import('@/layouts/default/index.vue')
 
-export interface MenuItem {
-  title: string
-  icon?: any
-  path: string
-  children?: MenuItem[]
-  hidden?: boolean
-}
-
-// 调试函数
-function logRoutes(routes: any) {
-  console.log('Routes for menu generation:', JSON.stringify(routes, null, 2));
-  return routes;
-}
-
-// 图标映射 - 根据路径片段自动匹配图标
-const iconMap = {
-  dashboard: 'HomeFilled',
-  system: 'Setting',
-  user: 'User',
-  role: 'List',
-  htmlcss: 'Files',
-  javascript: 'DataLine',
-  typescript: 'Postcard',
-  vue: 'Reading',
-  react: 'Basketball',
-  database: 'DataAnalysis',
-  network: 'Connection',
-  engineering: 'Box',
-  server: 'Cpu',
-  coding: 'Collection',
-  business: 'Briefcase',
-  browser: 'Monitor',
-  performance: 'Clock',
-  design: 'Operation',
-  os: 'Platform',
-  devops: 'Setting'
-};
-
-// 修改priorityMap对象，确保菜单按照以下顺序排序
-const priorityMap = {
-  '/dashboard': 1,
-  '/htmlcss': 10,
-  '/javascript': 20,
-  '/typescript': 30,
-  '/coding': 40,
-  '/vue': 50,
-  '/react': 60,
-  '/engineering': 70,
-  '/browser': 80,
-  '/performance': 90,
-  '/design': 100,
-  '/os': 110,
-  '/network': 120,
-  '/devops': 130,
-  '/server': 140,
-  '/database': 150,
-  '/business': 160
-};
-
 // 获取主题路由
-export function getTopicsRoutes() {
-  // 定义路由数组
-  const routes = [
+export function getTopicsRoutes(): AppRouteRecordRaw[] {
+  const routes: AppRouteRecordRaw[] = [
     {
       path: '/htmlcss',
       component: Layout,
-      meta: {
+      meta: { 
         title: 'HTML/CSS',
-        icon: 'Files'
+        icon: getIconConfig('HTML/CSS')
       },
-      children: [
-        {
-          path: '',
-          name: 'HTMLCSSTopics',
-          component: () => import('../views/topics/htmlcss/index.vue'),
-          meta: {
-            title: 'HTML/CSS 题目',
-            icon: 'Files'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/htmlcss/index.vue'),
+        meta: { 
+          title: 'HTML/CSS 题目',
+          icon: getIconConfig('HTML/CSS')
         }
-      ]
+      }]
     },
     {
       path: '/javascript',
       component: Layout,
-      meta: {
+      meta: { 
         title: 'JavaScript',
-        icon: 'DataLine'
+        icon: getIconConfig('JavaScript')
       },
-      children: [
-        {
-          path: '',
-          name: 'JavaScriptTopics',
-          component: () => import('../views/topics/javascript/index.vue'),
-          meta: {
-            title: 'JavaScript 题目',
-            icon: 'DataLine'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/javascript/index.vue'),
+        meta: { 
+          title: 'JavaScript 题目',
+          icon: getIconConfig('JavaScript')
         }
-      ]
+      }]
     },
     {
       path: '/typescript',
       component: Layout,
-      meta: {
+      meta: { 
         title: 'TypeScript',
-        icon: 'Postcard'
+        icon: getIconConfig('TypeScript')
       },
-      children: [
-        {
-          path: '',
-          name: 'TypeScriptTopics',
-          component: () => import('../views/topics/typescript/index.vue'),
-          meta: {
-            title: 'TypeScript 题目',
-            icon: 'Postcard'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/typescript/index.vue'),
+        meta: { 
+          title: 'TypeScript 题目',
+          icon: getIconConfig('TypeScript')
         }
-      ]
+      }]
     },
     {
       path: '/coding',
       component: Layout,
-      meta: {
+      meta: { 
         title: '编程题',
-        icon: 'Collection'
+        icon: getIconConfig('编程题')
       },
-      children: [
-        {
-          path: '',
-          name: 'CodingTopics',
-          component: () => import('../views/topics/coding/index.vue'),
-          meta: {
-            title: '编程题 题目',
-            icon: 'Collection'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/coding/index.vue'),
+        meta: { 
+          title: '编程题 题目',
+          icon: getIconConfig('编程题')
         }
-      ]
+      }]
     },
     {
       path: '/vue',
       component: Layout,
-      meta: {
+      meta: { 
         title: 'Vue',
-        icon: 'Reading'
+        icon: getIconConfig('Vue')
       },
-      children: [
-        {
-          path: '',
-          name: 'VueTopics',
-          component: () => import('../views/topics/vue/index.vue'),
-          meta: {
-            title: 'Vue 题目',
-            icon: 'Reading'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/vue/index.vue'),
+        meta: { 
+          title: 'Vue 题目',
+          icon: getIconConfig('Vue')
         }
-      ]
+      }]
     },
     {
       path: '/react',
       component: Layout,
-      meta: {
+      meta: { 
         title: 'React',
-        icon: 'Basketball'
+        icon: getIconConfig('React')
       },
-      children: [
-        {
-          path: '',
-          name: 'ReactTopics',
-          component: () => import('../views/topics/react/index.vue'),
-          meta: {
-            title: 'React 题目',
-            icon: 'Basketball'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/react/index.vue'),
+        meta: { 
+          title: 'React 题目',
+          icon: getIconConfig('React')
         }
-      ]
+      }]
     },
     {
       path: '/engineering',
       component: Layout,
-      meta: {
+      meta: { 
         title: '工程化',
-        icon: 'Box'
+        icon: getIconConfig('工程化')
       },
-      children: [
-        {
-          path: '',
-          name: 'EngineeringTopics',
-          component: () => import('../views/topics/engineering/index.vue'),
-          meta: {
-            title: '工程化 题目',
-            icon: 'Box'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/engineering/index.vue'),
+        meta: { 
+          title: '工程化 题目',
+          icon: getIconConfig('工程化')
         }
-      ]
+      }]
+    },
+    {
+      path: '/flutter',
+      component: Layout,
+      meta: { 
+        title: 'flutter',
+        icon: getIconConfig('flutter')
+      },
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/flutter/index.vue'),
+        meta: { 
+          title: 'flutter 题目',
+          icon: getIconConfig('flutter')
+        }
+      }]
     },
     {
       path: '/browser',
       component: Layout,
-      meta: {
+      meta: { 
         title: '浏览器',
-        icon: 'Monitor'
+        icon: getIconConfig('浏览器')
       },
-      children: [
-        {
-          path: '',
-          name: 'BrowserTopics',
-          component: () => import('../views/topics/browser/index.vue'),
-          meta: {
-            title: '浏览器 题目',
-            icon: 'Monitor'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/browser/index.vue'),
+        meta: { 
+          title: '浏览器 题目',
+          icon: getIconConfig('浏览器')
         }
-      ]
+      }]
     },
     {
       path: '/performance',
       component: Layout,
-      meta: {
+      meta: { 
         title: '性能优化',
-        icon: 'Clock'
+        icon: getIconConfig('性能优化')
       },
-      children: [
-        {
-          path: '',
-          name: 'PerformanceTopics',
-          component: () => import('../views/topics/performance/index.vue'),
-          meta: {
-            title: '性能优化 题目',
-            icon: 'Clock'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/performance/index.vue'),
+        meta: { 
+          title: '性能优化 题目',
+          icon: getIconConfig('性能优化')
         }
-      ]
+      }]
     },
     {
       path: '/design',
       component: Layout,
-      meta: {
+      meta: { 
         title: '设计模式',
-        icon: 'Operation'
+        icon: getIconConfig('设计模式')
       },
-      children: [
-        {
-          path: '',
-          name: 'DesignTopics',
-          component: () => import('../views/topics/design/index.vue'),
-          meta: {
-            title: '设计模式 题目',
-            icon: 'Operation'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/design/index.vue'),
+        meta: { 
+          title: '设计模式 题目',
+          icon: getIconConfig('设计模式')
         }
-      ]
+      }]
     },
+   {
+    path: '/devops',
+    component: Layout,
+    meta: { 
+      title: 'devops',
+      icon: getIconConfig('devops')
+    },
+    children: [{
+      path: '',
+      component: () => import('@/views/topics/devops/index.vue'),
+      meta: { 
+        title: 'devops 题目',
+        icon: getIconConfig('devops')
+      }
+    }]
+  },
+   
     {
       path: '/os',
       component: Layout,
-      meta: {
+      meta: { 
         title: '操作系统',
-        icon: 'Platform'
+        icon: getIconConfig('操作系统')
       },
-      children: [
-        {
-          path: '',
-          name: 'OSTopics',
-          component: () => import('../views/topics/os/index.vue'),
-          meta: {
-            title: '操作系统 题目',
-            icon: 'Platform'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/os/index.vue'),
+        meta: { 
+          title: '操作系统 题目',
+          icon: getIconConfig('操作系统')
         }
-      ]
+      }]
     },
     {
       path: '/network',
       component: Layout,
-      meta: {
+      meta: { 
         title: '计算机网络',
-        icon: 'Connection'
+        icon: getIconConfig('计算机网络')
       },
-      children: [
-        {
-          path: '',
-          name: 'NetworkTopics',
-          component: () => import('../views/topics/network/index.vue'),
-          meta: {
-            title: '网络 题目',
-            icon: 'Connection'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/network/index.vue'),
+        meta: { 
+          title: '网络 题目',
+          icon: getIconConfig('计算机网络')
         }
-      ]
-    },
-    {
-      path: '/devops',
-      component: Layout,
-      meta: {
-        title: 'Devops',
-        icon: 'Connection'
-      },
-      children: [
-        {
-          path: '',
-          name: 'DevopsTopics',
-          component: () => import('../views/topics/devops/index.vue'),
-          meta: {
-            title: 'devops 题目',
-            icon: 'Connection'
-          }
-        }
-      ]
+      }]
     },
     {
       path: '/server',
       component: Layout,
-      meta: {
+      meta: { 
         title: '服务端',
-        icon: 'Cpu'
+        icon: getIconConfig('服务端')
       },
-      children: [
-        {
-          path: '',
-          name: 'ServerTopics',
-          component: () => import('../views/topics/server/index.vue'),
-          meta: {
-            title: '服务端 题目',
-            icon: 'Cpu'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/server/index.vue'),
+        meta: { 
+          title: '服务端 题目',
+          icon: getIconConfig('服务端')
         }
-      ]
+      }]
     },
     {
       path: '/database',
       component: Layout,
-      meta: {
+      meta: { 
         title: '数据库',
-        icon: 'DataAnalysis'
+        icon: getIconConfig('数据库')
       },
-      children: [
-        {
-          path: '',
-          name: 'DatabaseTopics',
-          component: () => import('../views/topics/database/index.vue'),
-          meta: {
-            title: '数据库 题目',
-            icon: 'DataAnalysis'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/database/index.vue'),
+        meta: { 
+          title: '数据库 题目',
+          icon: getIconConfig('数据库')
         }
-      ]
+      }]
     },
     {
       path: '/business',
       component: Layout,
-      meta: {
+      meta: { 
         title: '业务场景',
-        icon: 'Briefcase'
+        icon: getIconConfig('业务场景')
       },
-      children: [
-        {
-          path: '',
-          name: 'BusinessTopics',
-          component: () => import('../views/topics/business/index.vue'),
-          meta: {
-            title: '业务场景 题目',
-            icon: 'Briefcase'
-          }
+      children: [{
+        path: '',
+        component: () => import('@/views/topics/business/index.vue'),
+        meta: { 
+          title: '业务场景 题目',
+          icon: getIconConfig('业务场景')
         }
-      ]
+      }]
     },
-  ];
 
-  // 按照priorityMap排序
-  return routes.sort((a, b) => {
-    const priorityA = priorityMap[a.path] || 999;
-    const priorityB = priorityMap[b.path] || 999;
-    return priorityA - priorityB;
-  });
+  ]
+
+  console.log('Routes with icons:', routes.map(r => ({
+    path: r.path,
+    title: r.meta.title,
+    icon: r.meta.icon
+  })))
+
+  routes.forEach(route => {
+    // console.log(`Route "${route.meta?.title}":`, {
+    //   icon: route.meta?.icon,
+    //   matched: route.meta?.icon !== menuIcons['default']
+    // })
+  })
+
+  return routes
 }
 
-// 从Element图标获取图标组件（不使用markRaw）
-export function getElementIcon(name: string) {
-  const iconMap = {
-    HomeFilled: markRaw(HomeFilled),
-    Setting: markRaw(Setting),
-    User: markRaw(User),
-    List: markRaw(List),
-    // 其他图标映射...
-  };
-  return iconMap[name] || null;
-}
-
-// 确保所有路由都有图标
-export function ensureRouteIcons(routes) {
-  return routes.map(route => {
-    if (!route.meta) {
-      route.meta = {};
-    }
-
-    // 从映射中查找图标，或使用默认图标
-    const pathSegment = route.path.split('/').pop();
-    if (!route.meta.icon && pathSegment && iconMap[pathSegment]) {
-      route.meta.icon = getElementIcon(iconMap[pathSegment]);
-    } else if (!route.meta.icon) {
-      route.meta.icon = getElementIcon('Document'); // 默认图标
-    }
-
-    // 递归处理子路由
-    if (route.children && route.children.length > 0) {
-      route.children = ensureRouteIcons(route.children);
-    }
-
-    return route;
-  });
-}
-
-// 确保图标正确显示的关键函数
-export function getIconComponent(iconName: string) {
-  // 创建一个映射表，确保每个图标名称都有对应的组件
-  const iconComponents = {
-    // 首页和系统
-    HomeFilled,
-    Setting,
-    User, 
-    List,
-    
-    // 前端基础
-    Files,             // HTML/CSS
-    DataLine,          // JavaScript
-    Postcard,          // TypeScript
-    
-    // 框架
-    Reading,           // Vue
-    Basketball,        // React
-    
-    // 工程化和浏览器
-    Box,               // 工程化
-    Monitor,           // 浏览器
-    Clock,             // 性能优化
-    
-    // 设计和系统
-    Operation,         // 设计模式
-    Platform,          // 操作系统
-    
-    // 网络和服务端
-    Connection,        // 网络
-    Cpu,               // 服务器
-    DataAnalysis,      // 数据库
-    
-    // 编程和业务
-    Collection,        // 编程题
-    Briefcase,         // 业务场景
-    
-    // 默认图标
-    Document: Document
-  };
-  
-  // 如果找不到图标，使用默认图标
-  return iconComponents[iconName] || iconComponents.Document;
-}
-
-// 修改createMenuItems函数确保正确使用图标
-export function createMenuItems(routes) {
-  if (!routes) return [];
-  
-  return routes.map(route => {
-    const menuItem: MenuItem = {
-      title: route.meta?.title || '',
-      path: route.path,
-      icon: route.meta?.icon ? getIconComponent(route.meta.icon) : null
-    };
-    
-    if (route.children && route.children.length > 0) {
-      // 使用递归处理子菜单
-      menuItem.children = route.children
-        .filter(child => !child.meta?.hidden)
-        .map(child => ({
-          title: child.meta?.title || '',
-          path: child.path ? (route.path + '/' + child.path).replace('//', '/') : route.path,
-          icon: child.meta?.icon ? getIconComponent(child.meta.icon) : null
-        }));
-    }
-    
-    return menuItem;
-  });
-}
-
-// 获取图标组件 - 简化版本
-export function getIcon(icon) {
-  if (!icon) return null;
-  
-  // 获取正确的图标组件
-  const iconMap = {
-    Files: markRaw(Files),
-    DataLine: markRaw(DataLine),
-    Postcard: markRaw(Postcard),
-    Collection: markRaw(Collection),
-    Reading: markRaw(Reading),
-    Basketball: markRaw(Basketball),
-    Box: markRaw(Box),
-    Monitor: markRaw(Monitor),
-    Clock: markRaw(Clock),
-    Operation: markRaw(Operation),
-    Platform: markRaw(Platform),
-    Connection: markRaw(Connection),
-    Cpu: markRaw(Cpu),
-    DataAnalysis: markRaw(DataAnalysis),
-    Briefcase: markRaw(Briefcase),
-    // 添加其他图标映射...
-    Document: markRaw(Document),
-    Setting: markRaw(Setting),
-    User: markRaw(User),
-    List: markRaw(List),
-    // 默认图标
-    default: markRaw(Document)
-  };
-  
-  return iconMap[icon] || iconMap.default;
+export default {
+  getTopicsRoutes
 } 

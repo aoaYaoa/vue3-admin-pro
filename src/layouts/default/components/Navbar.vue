@@ -12,7 +12,7 @@
 
     <div class="right-menu">
       <div class="right-menu-item">
-        <screenfull />
+        <!-- <screenfull /> -->
       </div>
       
       <el-dropdown class="avatar-container" trigger="click">
@@ -50,9 +50,7 @@ import Breadcrumb from './Breadcrumb.vue'
 import { useAppStore } from '../../../stores/app'
 // eslint-disable-next-line
 import Hamburger from './Hamburger.vue'
-// eslint-disable-next-line
-import Screenfull from './Screenfull.vue'
-// eslint-disable-next-line
+// import Screenfull from './Screenfull.vue'
 import { Fold, Expand } from '@element-plus/icons-vue'
 
 const router = useRouter()

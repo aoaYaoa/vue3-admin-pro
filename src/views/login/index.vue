@@ -8,49 +8,52 @@
       
       <div class="login-form-container">
         <h3 class="login-title">系统登录</h3>
-        <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
+        <el-form
+          ref="loginFormRef"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+          autocomplete="on"
+          label-position="left"
+        >
+          <div class="title-container">
+            <h3 class="title">登录</h3>
+          </div>
+
           <el-form-item prop="username">
-            <el-input 
-              v-model="loginForm.username" 
-              placeholder="用户名" 
-              prefix-icon="User"
-              size="large"
+            <el-input
+              v-model="loginForm.username"
+              placeholder="用户名"
+              type="text"
+              autocomplete="on"
             />
           </el-form-item>
-          
+
           <el-form-item prop="password">
-            <el-input 
-              v-model="loginForm.password" 
-              placeholder="密码" 
+            <el-input
+              v-model="loginForm.password"
+              placeholder="密码"
               :type="passwordVisible ? 'text' : 'password'"
-              prefix-icon="Lock"
-              size="large"
-              :suffix-icon="passwordVisible ? 'View' : 'Hide'"
-              @click-suffix-icon="passwordVisible = !passwordVisible"
-            />
+              autocomplete="on"
+            >
+              <template #suffix>
+                <el-icon class="cursor-pointer" @click="passwordVisible = !passwordVisible">
+                  <View v-if="passwordVisible"/>
+                  <Hide v-else/>
+                </el-icon>
+              </template>
+            </el-input>
           </el-form-item>
-          
+
           <el-button 
             :loading="loading" 
             type="primary" 
-            class="login-button" 
+            style="width: 100%; margin-bottom: 30px"
             @click="handleLogin"
-            size="large"
           >
             登录
           </el-button>
         </el-form>
-        
-        <div class="login-tips">
-          <div class="tip-item">
-            <span class="tip-label">用户名:</span>
-            <span class="tip-value">admin</span>
-          </div>
-          <div class="tip-item">
-            <span class="tip-label">密码:</span>
-            <span class="tip-value">123456</span>
-          </div>
-        </div>
       </div>
       
       <div class="login-footer">
@@ -61,16 +64,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/user.js'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
-const route = useRoute()
 const userStore = useUserStore()
-
 const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 const passwordVisible = ref(false)
@@ -80,43 +81,20 @@ const loginForm = reactive({
   password: '123456'
 })
 
-const loginRules = reactive<FormRules>({
+const loginRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
-})
-
-// 处理登录
-const handleLogin = async () => {
-  if (!loginFormRef.value) return
-  
-  await loginFormRef.value.validate(async (valid) => {
-    if (valid) {
-      loading.value = true
-      try {
-        // 调用store的登录方法
-        await userStore.login(loginForm)
-        
-        // 添加这行：登录成功后跳转到首页
-        router.push({ path: '/' })
-        
-        ElMessage.success('登录成功')
-      } catch (error) {
-        console.error('登录失败:', error)
-        ElMessage.error('登录失败: ' + (error instanceof Error ? error.message : '未知错误'))
-      } finally {
-        loading.value = false
-      }
-    }
-  })
 }
 
-// 自动聚焦到用户名输入框
-onMounted(() => {
-  if (loginFormRef.value) {
-    const inputEl = loginFormRef.value.$el.querySelector('input')
-    inputEl?.focus()
+const handleLogin = async () => {
+  try {
+    await userStore.login(loginForm)
+    const redirect = router.currentRoute.value.query.redirect || '/'
+    await router.replace(redirect as string)
+  } catch (error) {
+    // 错误处理
   }
-})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -233,5 +211,20 @@ onMounted(() => {
   .login-form-container {
     padding: 25px 20px;
   }
+}
+
+.title-container {
+  text-align: center;
+  margin-bottom: 30px;
+
+  .title {
+    font-size: 26px;
+    color: #2c3e50;
+    margin: 0;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style> 

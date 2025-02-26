@@ -145,7 +145,7 @@ const handleRowClick = (row: Topic) => {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .topic-container {
   padding: 20px;
 }

@@ -46,9 +46,7 @@
           <!-- 如果有子路由且需要显示为子菜单 -->
           <el-sub-menu v-if="route.children && route.children.length > 0 && route.meta && route.meta.title" :index="route.path">
             <template #title>
-              <el-icon>
-                <component :is="getIcon(route.meta.icon)" />
-              </el-icon>
+              <menu-icon :icon="route.meta.icon" />
               <span>{{ route.meta.title }}</span>
             </template>
             
@@ -58,9 +56,7 @@
               :key="child.path"
               :index="route.path + '/' + child.path"
             >
-              <el-icon v-if="child.meta && child.meta.icon">
-                <component :is="getIcon(child.meta.icon)" />
-              </el-icon>
+              <menu-icon :icon="child.meta?.icon" />
               <template #title>{{ child.meta ? child.meta.title : '' }}</template>
             </el-menu-item>
           </el-sub-menu>
@@ -70,16 +66,14 @@
             v-else-if="route.meta && route.meta.title" 
             :index="route.path"
           >
-            <el-icon v-if="route.meta.icon">
-              <component :is="getIcon(route.meta.icon)" />
-            </el-icon>
+            <menu-icon :icon="route.meta.icon" />
             <template #title>{{ route.meta.title }}</template>
           </el-menu-item>
         </template>
       </el-menu>
       
       <!-- 添加底部空白元素 -->
-      <div style="height: 120px;"></div>
+      <!-- <div style="height: 120px;"></div> -->
     </el-scrollbar>
   </div>
 </template>
@@ -91,7 +85,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
@@ -116,9 +110,12 @@ import {
   Briefcase,
   Files,
   DataLine,
-  Postcard
+  Postcard,
+  
 } from '@element-plus/icons-vue'
 import { getTopicsRoutes } from '@/router/menus'
+import { toReactive } from '@vueuse/core';
+import MenuIcon from '@/components/MenuIcon.vue'
 
 const route = useRoute()
 const appStore = useAppStore()
@@ -136,26 +133,14 @@ const activeMenu = computed(() => {
 
 // 从路由配置中获取菜单项
 const filteredRoutes = computed(() => {
+  console.log(filteredRoutes
+  ,'filteredRoutes')
   return getTopicsRoutes()
 })
 
-// 处理菜单项的图标
-const getIcon = (icon: string) => {
-  if (!icon) return DocumentIcon
-  
-  // 图标映射
-  interface IconMap {
-    [key: string]: Component;
-    HomeFilled: Component;
-    // ... 其他图标
-  }
-
-  const iconMap: IconMap = {
-    HomeFilled: HomeFilled,
-    // ... 其他图标
-  }
-  
-  return (iconMap as any)[icon] || DocumentIcon
+// 在 iconMap 中添加
+const iconMap: Record<string, Component> = {
+ 
 }
 </script>
 
@@ -196,15 +181,29 @@ const getIcon = (icon: string) => {
 /* 确保菜单项样式一致 */
 :deep(.el-menu) {
   border-right: none;
+  // background-color: var(--sidebar-bg) !important;
 }
 
 :deep(.el-menu--collapse) {
   width: 64px;
 }
 
-:deep(.el-menu-item), :deep(.el-sub-menu__title) {
-  height: 56px;
-  line-height: 56px;
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
+  transition: all 0.3s ease;
+  background-color: transparent !important;
+  
+  .el-menu--collapse & {
+    width: 100% !important;
+    margin: 4px 8px;
+    padding: 0 8px !important;
+    background-color: transparent !important;
+    
+    .menu-icon {
+      margin-right: 0;
+      font-size: 20px;
+    }
+  }
 }
 
 :deep(.el-menu-item.is-active) {
@@ -212,10 +211,46 @@ const getIcon = (icon: string) => {
 }
 
 :deep(.el-menu-item:hover), :deep(.el-sub-menu__title:hover) {
-  background-color: #2d3748 !important;
+  // background-color: #2d3748 !important;
 }
 
 :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
   color: #ffffff !important;
+}
+
+:deep(.el-sub-menu) {
+  .el-menu--collapse & {
+    .el-sub-menu__title {
+      background: transparent !important;
+      padding: 0 8px !important;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+  }
+}
+
+:deep(.el-menu-item .menu-icon),
+:deep(.el-sub-menu__title .menu-icon) {
+  margin-right: 12px;
+  font-size: 18px;
+  
+  .el-menu--collapse & {
+    margin-right: 0;
+    font-size: 20px;
+  }
+}
+
+.el-menu--collapse {
+  :deep(.el-sub-menu__title span),
+  :deep(.el-menu-item > span) {
+    // display: none;
+  }
+}
+
+:deep(.el-tooltip__trigger) {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 </style> 

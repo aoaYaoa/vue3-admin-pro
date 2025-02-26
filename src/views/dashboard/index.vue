@@ -85,6 +85,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .dashboard-container {
   width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .dashboard-wrapper {

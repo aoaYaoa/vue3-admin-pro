@@ -35,7 +35,7 @@ body {
 }
 
 .el-menu--popup {
-  background-color: var(--sidebar-bg) !important;
+  // background-color: var(--sidebar-bg) !important;
   
   .el-menu-item {
     color: var(--sidebar-text);
@@ -125,13 +125,14 @@ body {
 /* 确保所有滚动容器的内容在底部有足够空间 */
 .el-scrollbar__wrap, 
 .el-scrollbar__view {
-  padding-bottom: 60px !important;
+  
+  // padding-bottom: 60px !important;
 }
 
 /* 边栏容器特殊处理 */
 .sidebar-container .el-scrollbar__view,
 .sidebar-menu .el-scrollbar__view {
-  padding-bottom: 120px !important; /* 边栏底部需要更多空间 */
+  // padding-bottom: 120px !important; /* 边栏底部需要更多空间 */
 }
 
 /* 修复边栏高度问题 */
@@ -145,15 +146,31 @@ body {
 
 /* 确保内容底部有足够空间 */
 .el-scrollbar__view {
-  padding-bottom: 60px;
+  // padding-bottom: 60px;
 }
 
 /* 为侧边栏特别添加更多空间 */
 .sidebar-container .el-scrollbar__view {
   padding-bottom: 120px;
 }
-
+.el-drawer{
+  margin-top: 50px !important;
+  height: calc(100% - 90px) !important;
+}
 /* 抽屉内容滚动空间 */
 .el-drawer__body .el-scrollbar__view {
   padding-bottom: 80px !important;
+}
+
+:deep(.el-menu) {
+  // background-color: var(--sidebar-bg) !important;
+  .el-menu-item,
+  .el-sub-menu__title {
+    &:hover {
+      background-color: rgba(255,255,255,0.08) !important;
+    }
+    &.is-active {
+      background-color: var(--primary-color) !important;
+    }
+  }
 } 
