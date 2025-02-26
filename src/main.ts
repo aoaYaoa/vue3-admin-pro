@@ -33,7 +33,7 @@ app.use(store)
 
 // 注册所有 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component as any)
+  app.component(key, component)
 }
 
 app.use(ElementPlus)

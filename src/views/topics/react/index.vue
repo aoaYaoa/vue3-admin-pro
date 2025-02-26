@@ -74,35 +74,17 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
               
-              <!-- 可以在这里添加代码示例 -->
-              <div class="code-example" v-if="false">
+              <div v-if="currentTopic.code" class="code-example">
                 <el-divider content-position="left">代码示例</el-divider>
-                <pre class="code-block">
-function Example() {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  });
-  
-  return (
-    &lt;div&gt;
-      &lt;p&gt;You clicked {count} times&lt;/p&gt;
-      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
-        Click me
-      &lt;/button&gt;
-    &lt;/div&gt;
-  );
-}
-                </pre>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
               </div>
             </div>
           </div>
@@ -114,173 +96,31 @@ function Example() {
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-
+// import { Search } from '@element-plus/icons-vue'
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
 interface Topic {
   id: number
   title: string
   tags: string[]
-  difficulty: string
+  difficulty: string,
+  answer?: string,
+  code?: string
 }
 
-// React生态题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 185,
-    title: 'React 中为什么要设计 Fiber？',
-    tags: ['React', 'Fiber', '原理'],
-    difficulty: '困难'
-  },
-  {
-    id: 186,
-    title: '组件的生命周期方法。',
-    tags: ['React', '生命周期'],
-    difficulty: '简单'
-  },
-  {
-    id: 187,
-    title: '状态（state）和属性（props）之间有什么区别？',
-    tags: ['React', 'state', 'props'],
-    difficulty: '简单'
-  },
-  {
-    id: 188,
-    title: '高阶组件（Higher-Order Components）是什么？',
-    tags: ['React', 'HOC', '设计模式'],
-    difficulty: '中等'
-  },
-  {
-    id: 189,
-    title: '受控组件和非受控组件',
-    tags: ['React', '表单', '组件设计'],
-    difficulty: '中等'
-  },
-  {
-    id: 190,
-    title: '展示组件(Presentational)和容器组件(Container)',
-    tags: ['React', '组件设计', '模式'],
-    difficulty: '中等'
-  },
-  {
-    id: 191,
-    title: '类组件(Class components)和函数组件(Functional component)',
-    tags: ['React', '组件类型'],
-    difficulty: '简单'
-  },
-  {
-    id: 192,
-    title: '如何划分 技术组件 和 业务组件？',
-    tags: ['React', '组件设计', '最佳实践'],
-    difficulty: '中等'
-  },
-  {
-    id: 193,
-    title: '什么是 React 中的上下文（Context）？',
-    tags: ['React', 'Context', '状态管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 194,
-    title: 'React 是 mvvm 框架吗？',
-    tags: ['React', '架构模式', 'MVVM'],
-    difficulty: '中等'
-  },
-  {
-    id: 195,
-    title: 'React 如何实现 mvvm?',
-    tags: ['React', 'MVVM', '实现'],
-    difficulty: '中等'
-  },
-  {
-    id: 196,
-    title: 'redux 主要解决什么问题？',
-    tags: ['Redux', '状态管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 197,
-    title: 'React 性能优化方案，如何避免不必要的render',
-    tags: ['React', '性能优化', 'render'],
-    difficulty: '中等'
-  },
-  {
-    id: 198,
-    title: '虚拟 DOM 的意义',
-    tags: ['React', '虚拟DOM', '原理'],
-    difficulty: '中等'
-  },
-  {
-    id: 199,
-    title: 'react DOM Diff 算法',
-    tags: ['React', 'Diff算法', '虚拟DOM'],
-    difficulty: '困难'
-  },
-  {
-    id: 200,
-    title: '关于 Fiber 架构',
-    tags: ['React', 'Fiber', '架构'],
-    difficulty: '困难'
-  },
-  {
-    id: 201,
-    title: '关于 Flux',
-    tags: ['Flux', '架构', '状态管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 202,
-    title: 'React 项目脚手架',
-    tags: ['React', '工程化', '脚手架'],
-    difficulty: '简单'
-  },
-  {
-    id: 203,
-    title: 'React 组件可请求数据方案',
-    tags: ['React', '数据获取', 'Hooks'],
-    difficulty: '中等'
-  },
-  {
-    id: 204,
-    title: 'refs 的作用',
-    tags: ['React', 'refs', 'DOM操作'],
-    difficulty: '简单'
-  },
-  {
-    id: 205,
-    title: 'key 在渲染列表时的作用',
-    tags: ['React', '列表渲染', '性能优化'],
-    difficulty: '简单'
-  },
-  {
-    id: 206,
-    title: '如何使用 useState Hook',
-    tags: ['React', 'Hooks', 'useState'],
-    difficulty: '简单'
-  },
-  {
-    id: 207,
-    title: '如何使用 useEffect Hook',
-    tags: ['React', 'Hooks', 'useEffect', '生命周期'],
-    difficulty: '中等'
-  },
-  {
-    id: 208,
-    title: '如何使用自定义Hook',
-    tags: ['React', 'Hooks', '自定义Hook'],
-    difficulty: '中等'
-  }
-])
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -379,5 +219,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style> 

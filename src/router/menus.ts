@@ -13,7 +13,7 @@ import {
   Box,
   DataAnalysis,
   Briefcase,
-  Document as DocumentIcon,
+  Document,
   Collection,
   Connection,
   Menu,
@@ -330,6 +330,25 @@ export function getTopicsRoutes() {
       ]
     },
     {
+      path: '/devops',
+      component: Layout,
+      meta: {
+        title: 'Devops',
+        icon: 'Connection'
+      },
+      children: [
+        {
+          path: '',
+          name: 'DevopsTopics',
+          component: () => import('../views/topics/devops/index.vue'),
+          meta: {
+            title: 'devops 题目',
+            icon: 'Connection'
+          }
+        }
+      ]
+    },
+    {
       path: '/server',
       component: Layout,
       meta: {
@@ -385,7 +404,7 @@ export function getTopicsRoutes() {
           }
         }
       ]
-    }
+    },
   ];
 
   // 按照priorityMap排序
@@ -397,22 +416,15 @@ export function getTopicsRoutes() {
 }
 
 // 从Element图标获取图标组件（不使用markRaw）
-export function getElementIcon(name) {
-  switch (name) {
-    case 'HomeFilled': return HomeFilled;
-    case 'Setting': return Setting;
-    case 'User': return User;
-    case 'List': return List;
-    case 'Document': return DocumentIcon;
-    case 'DataAnalysis': return DataAnalysis;
-    case 'Connection': return Connection;
-    case 'Monitor': return Monitor;
-    case 'Cpu': return Cpu;
-    case 'Box': return Box;
-    case 'Collection': return Collection;
-    case 'Briefcase': return Briefcase;
-    default: return DocumentIcon; // 默认图标
-  }
+export function getElementIcon(name: string) {
+  const iconMap = {
+    HomeFilled: markRaw(HomeFilled),
+    Setting: markRaw(Setting),
+    User: markRaw(User),
+    List: markRaw(List),
+    // 其他图标映射...
+  };
+  return iconMap[name] || null;
 }
 
 // 确保所有路由都有图标
@@ -477,7 +489,7 @@ export function getIconComponent(iconName: string) {
     Briefcase,         // 业务场景
     
     // 默认图标
-    Document: DocumentIcon
+    Document: Document
   };
   
   // 如果找不到图标，使用默认图标
@@ -532,12 +544,12 @@ export function getIcon(icon) {
     DataAnalysis: markRaw(DataAnalysis),
     Briefcase: markRaw(Briefcase),
     // 添加其他图标映射...
-    Document: markRaw(DocumentIcon),
+    Document: markRaw(Document),
     Setting: markRaw(Setting),
     User: markRaw(User),
     List: markRaw(List),
     // 默认图标
-    default: markRaw(DocumentIcon)
+    default: markRaw(Document)
   };
   
   return iconMap[icon] || iconMap.default;

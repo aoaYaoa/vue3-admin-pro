@@ -19,34 +19,6 @@ marked.setOptions({
   xhtml: false
 });
 
-// 自定义渲染器
-const renderer = new marked.Renderer();
-
-// 自定义代码块渲染
-renderer.code = (code, language) => {
-  const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-  const highlightedCode = hljs.highlight(code, { 
-    language: validLanguage 
-  }).value;
-  
-  return `
-    <div class="code-block-wrapper">
-      <div class="code-header">
-        <span class="language-badge">${validLanguage}</span>
-        <button class="copy-button" onclick="copyCodeToClipboard(this)">
-          <i class="el-icon-document-copy"></i>
-        </button>
-      </div>
-      <pre class="code-block language-${validLanguage}"><code>${highlightedCode}</code></pre>
-    </div>
-  `;
-};
-
-// 解析 Markdown 文本
-export function parseMarkdown(text: string): string {
-  return marked(text, { renderer });
-}
-
 /**
  * 渲染Markdown内容为HTML
  * @param content Markdown格式的内容

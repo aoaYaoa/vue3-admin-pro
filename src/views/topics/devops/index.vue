@@ -74,13 +74,18 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
+              
+              <div v-if="currentTopic.code" class="code-example">
+                <el-divider content-position="left">代码示例</el-divider>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
+              </div>
             </div>
           </div>
         </div>
@@ -91,127 +96,33 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+// import { Search } from '@element-plus/icons-vue'
 
-interface Topic {
-  id: number
-  title: string
-  tags: string[]
-  difficulty: string
-}
-
-// DevOps题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 313,
-    title: '设计文档规范',
-    tags: ['文档', '规范', '项目管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 314,
-    title: 'ESLint 的作用',
-    tags: ['ESLint', '代码质量', '静态分析'],
-    difficulty: '简单'
-  },
-  {
-    id: 315,
-    title: 'Git 的基本使用方法',
-    tags: ['Git', '版本控制', '基础'],
-    difficulty: '简单'
-  },
-  {
-    id: 316,
-    title: 'git commit message 规范',
-    tags: ['Git', '提交规范', '团队协作'],
-    difficulty: '简单'
-  },
-  {
-    id: 317,
-    title: 'Git Flow 工作流',
-    tags: ['Git', 'Git Flow', '分支管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 318,
-    title: 'Git 提交文件发生冲突怎么解决',
-    tags: ['Git', '冲突解决', '版本控制'],
-    difficulty: '中等'
-  },
-  {
-    id: 319,
-    title: '本次提交误操作，具体如何撤销',
-    tags: ['Git', '撤销操作', '版本回退'],
-    difficulty: '中等'
-  },
-  {
-    id: 320,
-    title: '查看查看某个文件的历史修改记录',
-    tags: ['Git', '历史记录', '文件跟踪'],
-    difficulty: '简单'
-  },
-  {
-    id: 321,
-    title: '本地工程配置文件，不用提交',
-    tags: ['Git', '.gitignore', '配置文件'],
-    difficulty: '简单'
-  },
-  {
-    id: 322,
-    title: 'git fetch 和 git pull 的区别',
-    tags: ['Git', 'fetch', 'pull'],
-    difficulty: '中等'
-  },
-  {
-    id: 323,
-    title: 'git rebase 和 git merge 的区别',
-    tags: ['Git', 'rebase', 'merge'],
-    difficulty: '中等'
-  },
-  {
-    id: 324,
-    title: 'git reset、git revert 区别',
-    tags: ['Git', 'reset', 'revert'],
-    difficulty: '中等'
-  },
-  {
-    id: 325,
-    title: 'git 跟 svn 有什么区别',
-    tags: ['Git', 'SVN', '版本控制'],
-    difficulty: '中等'
-  },
-  {
-    id: 326,
-    title: '如何解决联调依赖问题',
-    tags: ['前后端联调', '依赖管理', '团队协作'],
-    difficulty: '中等'
-  },
-  {
-    id: 327,
-    title: '关于 DevOps',
-    tags: ['DevOps', '开发运维', '持续集成'],
-    difficulty: '中等'
-  },
-  {
-    id: 328,
-    title: '关于 Docker',
-    tags: ['Docker', '容器化', '部署'],
-    difficulty: '中等'
-  }
-])
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
+interface Topic {
+  id: number
+  title: string
+  tags: string[]
+  difficulty: string,
+  answer?: string,
+  code?: string
+}
 
 // 难度颜色映射
 const getDifficultyType = (difficulty: string) => {
@@ -308,5 +219,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style>

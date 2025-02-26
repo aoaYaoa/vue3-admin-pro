@@ -80,22 +80,12 @@
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
               
-              <!-- 可以在这里添加代码示例 -->
-              <div class="code-example" v-if="false">
+              <div v-if="currentTopic.code" class="code-example">
                 <el-divider content-position="left">代码示例</el-divider>
-                <pre class="code-block">
-// 代码示例将在这里显示
-interface Example {
-  name: string;
-  age: number;
-}
-
-function greet(person: Example): string {
-  return `Hello, ${person.name}!`;
-}
-                </pre>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
               </div>
             </div>
           </div>
@@ -107,77 +97,32 @@ function greet(person: Example): string {
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-
+// import { Search } from '@element-plus/icons-vue'
+import { CodeBlock } from '@/components'
+import topicList from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { ElDivider } from 'element-plus'
 interface Topic {
   id: number
   title: string
   tags: string[]
-  difficulty: string
+  difficulty: string,
+  answer?: string,
+  code?: string
 }
 
-// TypeScript 题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 113,
-    title: 'TypeScript 和 JavaScript 的区别',
-    tags: ['TypeScript', '基础概念'],
-    difficulty: '简单'
-  },
-  {
-    id: 114,
-    title: 'TS 定义变量类型的方法',
-    tags: ['TypeScript', '类型系统'],
-    difficulty: '简单'
-  },
-  {
-    id: 115,
-    title: 'TypeScript 类型注解 (Type Annotation)',
-    tags: ['TypeScript', '类型注解'],
-    difficulty: '简单'
-  },
-  {
-    id: 116,
-    title: 'TypeScript 中的类型系统',
-    tags: ['TypeScript', '类型系统'],
-    difficulty: '中等'
-  },
-  {
-    id: 117,
-    title: 'TypeScript 中的接口 (Interface)',
-    tags: ['TypeScript', '接口'],
-    difficulty: '中等'
-  },
-  {
-    id: 118,
-    title: 'TypeScript 接口 (Interface) 与类型别名 (Type)',
-    tags: ['TypeScript', '接口', '类型别名'],
-    difficulty: '中等'
-  },
-  {
-    id: 119,
-    title: '拓扑排序-求模块依赖关系',
-    tags: ['算法', '拓扑排序', '依赖关系'],
-    difficulty: '困难'
-  },
-  {
-    id: 120,
-    title: '求笛卡尔积',
-    tags: ['算法', '数学'],
-    difficulty: '中等'
-  }
-])
+
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -275,6 +220,44 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style>
 

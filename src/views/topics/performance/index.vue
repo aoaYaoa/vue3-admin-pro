@@ -74,13 +74,18 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
+              
+              <div v-if="currentTopic.code" class="code-example">
+                <el-divider content-position="left">代码示例</el-divider>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
+              </div>
             </div>
           </div>
         </div>
@@ -91,125 +96,32 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-
+// import { Search } from '@element-plus/icons-vue'
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
 interface Topic {
   id: number
   title: string
   tags: string[]
-  difficulty: string
+  difficulty: string,
+  answer?: string,
+  code?: string
 }
 
-// 前端性能题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 228,
-    title: '性能优化相关的参考指标',
-    tags: ['性能优化', '指标', '前端'],
-    difficulty: '中等'
-  },
-  {
-    id: 229,
-    title: 'performance 对象',
-    tags: ['性能', 'API', '浏览器'],
-    difficulty: '中等'
-  },
-  {
-    id: 230,
-    title: 'webpack 优化前端性能',
-    tags: ['webpack', '性能优化', '构建工具'],
-    difficulty: '中等'
-  },
-  {
-    id: 231,
-    title: '如何实现长缓存',
-    tags: ['缓存', '性能优化', 'HTTP'],
-    difficulty: '中等'
-  },
-  {
-    id: 232,
-    title: '要遍历 100000000 项数据，如何优化',
-    tags: ['性能优化', '大数据', '算法'],
-    difficulty: '困难'
-  },
-  {
-    id: 233,
-    title: 'webWorker 优化 1000 万数据的计算',
-    tags: ['WebWorker', '多线程', '性能优化'],
-    difficulty: '困难'
-  },
-  {
-    id: 234,
-    title: '延迟加载的方式有哪些',
-    tags: ['延迟加载', '性能优化', '加载策略'],
-    difficulty: '中等'
-  },
-  {
-    id: 235,
-    title: '图片懒加载和预加载的区别',
-    tags: ['图片优化', '懒加载', '预加载'],
-    difficulty: '简单'
-  },
-  {
-    id: 236,
-    title: '加载大量图片优化方案',
-    tags: ['图片优化', '性能优化', '加载策略'],
-    difficulty: '中等'
-  },
-  {
-    id: 237,
-    title: 'CDN 能加速访问资源的原理',
-    tags: ['CDN', '网络优化', '分发'],
-    difficulty: '中等'
-  },
-  {
-    id: 238,
-    title: '浏览器的渲染过程，DOM 树和渲染树的区别',
-    tags: ['浏览器渲染', 'DOM', '渲染树'],
-    difficulty: '中等'
-  },
-  {
-    id: 239,
-    title: '浏览器输入 URL 到页面加载的全过程',
-    tags: ['浏览器', '网络', '渲染'],
-    difficulty: '中等'
-  },
-  {
-    id: 240,
-    title: '列表无限滚动，页面逐渐卡顿如何解决',
-    tags: ['性能优化', '无限滚动', 'DOM'],
-    difficulty: '中等'
-  },
-  {
-    id: 241,
-    title: '虚拟列表，如果子元素高度不固定如何处理',
-    tags: ['虚拟列表', '性能优化', '动态高度'],
-    difficulty: '困难'
-  },
-  {
-    id: 242,
-    title: '域名发散',
-    tags: ['HTTP', '网络优化', '资源加载'],
-    difficulty: '简单'
-  },
-  {
-    id: 243,
-    title: '域名收敛',
-    tags: ['HTTP', '网络优化', '资源加载'],
-    difficulty: '简单'
-  }
-])
+
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -308,5 +220,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style> 

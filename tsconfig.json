@@ -38,6 +38,6 @@
     "src/**/*.vue",
     "src/types/**/*.d.ts",
     "vite.config.ts"
-  ],
+, "src/views/topics/javascript/data/index.js"  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

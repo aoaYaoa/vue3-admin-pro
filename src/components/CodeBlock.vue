@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { CopyDocument } from '@element-plus/icons-vue'
+import { Document as CopyDocument } from '@element-plus/icons-vue'
 
 const props = defineProps({
   code: {
@@ -76,6 +76,12 @@ const fallbackCopy = (text: string) => {
   }
   
   document.body.removeChild(textarea)
+}
+</script>
+
+<script lang="ts">
+export default {
+  name: 'CodeBlock'
 }
 </script>
 

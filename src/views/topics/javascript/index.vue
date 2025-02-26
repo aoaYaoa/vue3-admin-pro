@@ -74,24 +74,17 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
               
-              <!-- 可以在这里添加代码示例 -->
-              <div class="code-example" v-if="false">
+              <div v-if="currentTopic.code" class="code-example">
                 <el-divider content-position="left">代码示例</el-divider>
-                <pre class="code-block">
-// 代码示例将在这里显示
-function example() {
-  // JavaScript 代码示例
-  console.log('Hello, world!');
-}
-                </pre>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
               </div>
             </div>
           </div>
@@ -103,13 +96,19 @@ function example() {
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+// import { Search } from '@element-plus/icons-vue'
 import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
+
 interface Topic {
   id: number
   title: string
   tags: string[]
   difficulty: string
+  answer?: string
+  code?: string
 }
 
 
@@ -221,5 +220,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style> 

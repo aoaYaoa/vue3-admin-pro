@@ -106,8 +106,6 @@ const handleLogin = async () => {
       } finally {
         loading.value = false
       }
-    } else {
-      return false
     }
   })
 }

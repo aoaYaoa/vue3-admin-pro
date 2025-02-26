@@ -74,13 +74,18 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
+              
+              <div v-if="currentTopic.code" class="code-example">
+                <el-divider content-position="left">代码示例</el-divider>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
+              </div>
             </div>
           </div>
         </div>
@@ -91,89 +96,25 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-
-interface Topic {
-  id: number
-  title: string
-  tags: string[]
-  difficulty: string
-}
-
-// 服务端题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 329,
-    title: 'nodejs 特点',
-    tags: ['Node.js', '服务端', '基础概念'],
-    difficulty: '简单'
-  },
-  {
-    id: 330,
-    title: 'nodejs 作用',
-    tags: ['Node.js', '服务端', '应用场景'],
-    difficulty: '简单'
-  },
-  {
-    id: 331,
-    title: 'nodejs 开放跨域白名单',
-    tags: ['Node.js', 'CORS', '跨域'],
-    difficulty: '中等'
-  },
-  {
-    id: 332,
-    title: 'dependencies 和 devDependencies 区别',
-    tags: ['Node.js', 'npm', '依赖管理'],
-    difficulty: '简单'
-  },
-  {
-    id: 333,
-    title: '幽灵依赖是什么及解决方法',
-    tags: ['Node.js', 'npm', '依赖管理'],
-    difficulty: '中等'
-  },
-  {
-    id: 334,
-    title: '从服务器接收到 url 开始渲染页面，整个过程是什么',
-    tags: ['浏览器渲染', '网络', '性能优化'],
-    difficulty: '中等'
-  },
-  {
-    id: 335,
-    title: 'Koa 和 Express 区别',
-    tags: ['Node.js', 'Koa', 'Express'],
-    difficulty: '中等'
-  },
-  {
-    id: 336,
-    title: 'nginx 配置',
-    tags: ['Nginx', '服务器', '配置'],
-    difficulty: '中等'
-  },
-  {
-    id: 337,
-    title: 'nginx 配置代理转发，配置缓存',
-    tags: ['Nginx', '代理', '缓存'],
-    difficulty: '中等'
-  },
-  {
-    id: 338,
-    title: '反向代理',
-    tags: ['代理', 'Nginx', '服务架构'],
-    difficulty: '中等'
-  }
-])
-
+// import { Search } from '@element-plus/icons-vue'
+import topicList from './data'
+import { Topic } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
+// 保留 Search 图标引用，确保它在模板中被使用
+// 例如在模板中的搜索输入框：<el-input prefix-icon="Search" ... />
+// const searchIcon = Search
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -271,6 +212,44 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style>
 

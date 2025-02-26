@@ -97,10 +97,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+// import { Search as IconSearch } from '@element-plus/icons-vue'
+import { CodeBlock } from '@/components'
 import { topicList } from './data'
 import { renderMarkdown } from '@/utils/markdown-parser'
-import CodeBlock from '@/components/CodeBlock.vue'
 
 interface Topic {
   id: number

@@ -45,9 +45,9 @@ const handleUpdate = (msg) =&gt; {
 &lt;/template&gt;
 
 &lt;script setup&gt;
-const props = defineProps({
-  message: String
-})
+const props = defineProps<{
+  message: string
+}>()
 
 const emits = defineEmits(['update'])
 
@@ -134,8 +134,10 @@ const counterStore = useCounterStore()
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useCounterStore } from '@/stores/counter'
 
 const activeTab = ref('props')
+const counterStore = useCounterStore()
 </script>
 
 <style scoped>

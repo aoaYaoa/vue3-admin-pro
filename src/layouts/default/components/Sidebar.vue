@@ -91,9 +91,11 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
+import type { Component } from 'vue'
 import { 
   HomeFilled, 
   Setting, 
@@ -142,30 +144,18 @@ const getIcon = (icon: string) => {
   if (!icon) return DocumentIcon
   
   // 图标映射
-  const iconMap = {
-    'HomeFilled': HomeFilled,
-    'Setting': Setting,
-    'User': User,
-    'List': List,
-    'Document': DocumentIcon,
-    'Collection': Collection,
-    'Box': Box,
-    'Monitor': Monitor,
-    'Cpu': Cpu,
-    'DataAnalysis': DataAnalysis,
-    'Connection': Connection,
-    'Reading': Reading,
-    'Basketball': Basketball,
-    'Clock': Clock,
-    'Operation': Operation,
-    'Platform': Platform,
-    'Briefcase': Briefcase,
-    'Files': Files,
-    'DataLine': DataLine,
-    'Postcard': Postcard
+  interface IconMap {
+    [key: string]: Component;
+    HomeFilled: Component;
+    // ... 其他图标
+  }
+
+  const iconMap: IconMap = {
+    HomeFilled: HomeFilled,
+    // ... 其他图标
   }
   
-  return iconMap[icon] || DocumentIcon
+  return (iconMap as any)[icon] || DocumentIcon
 }
 </script>
 

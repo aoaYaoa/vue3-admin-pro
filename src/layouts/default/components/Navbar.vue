@@ -48,16 +48,12 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import Breadcrumb from './Breadcrumb.vue'
 import { useAppStore } from '../../../stores/app'
+// eslint-disable-next-line
 import Hamburger from './Hamburger.vue'
+// eslint-disable-next-line
 import Screenfull from './Screenfull.vue'
-import {
-  ArrowDown,
-  UserFilled,
-  SwitchButton,
-  User,
-  Fold,
-  Expand
-} from '@element-plus/icons-vue'
+// eslint-disable-next-line
+import { Fold, Expand } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()

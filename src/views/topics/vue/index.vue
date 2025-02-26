@@ -74,27 +74,17 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
               
-              <!-- 可以在这里添加代码示例 -->
-              <div class="code-example" v-if="false">
+              <div v-if="currentTopic.code" class="code-example">
                 <el-divider content-position="left">代码示例</el-divider>
-                <pre class="code-block">
-// 代码示例将在这里显示
-const app = Vue.createApp({
-  data() {
-    return {
-      message: 'Hello Vue!'
-    }
-  }
-})
-                </pre>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
               </div>
             </div>
           </div>
@@ -106,224 +96,34 @@ const app = Vue.createApp({
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+// import { Search } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
-
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
 interface Topic {
   id: number
   title: string
   tags: string[]
-  difficulty: string
+  difficulty: string,
+  answer?: string,
+  code?: string
 }
-
-// Vue生态题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 153,
-    title: 'Vue2 不能监听数组下标和对象新增属性的原因',
-    tags: ['Vue2', '响应式', '原理'],
-    difficulty: '中等'
-  },
-  {
-    id: 154,
-    title: 'vue2 和 vue3 的具体区别',
-    tags: ['Vue2', 'Vue3', '比较'],
-    difficulty: '中等'
-  },
-  {
-    id: 155,
-    title: 'vue 的通讯方式',
-    tags: ['Vue', '组件通信'],
-    difficulty: '简单'
-  },
-  {
-    id: 156,
-    title: 'vue 的常用修饰符',
-    tags: ['Vue', '修饰符', '指令'],
-    difficulty: '简单'
-  },
-  {
-    id: 157,
-    title: 'vue2 初始化过程做了什么？',
-    tags: ['Vue2', '初始化', '生命周期'],
-    difficulty: '中等'
-  },
-  {
-    id: 158,
-    title: 'created 和 mounted 的区别',
-    tags: ['Vue', '生命周期'],
-    difficulty: '简单'
-  },
-  {
-    id: 159,
-    title: 'Vue 的 $nextTick 是什么？原理是？',
-    tags: ['Vue', 'nextTick', '异步更新'],
-    difficulty: '中等'
-  },
-  {
-    id: 160,
-    title: '以下两段代码在 vue 中有什么区别?',
-    tags: ['Vue', '响应式', '实践'],
-    difficulty: '中等'
-  },
-  {
-    id: 161,
-    title: '为什么 vue 中的 data 必须是函数?',
-    tags: ['Vue', '组件', '数据'],
-    difficulty: '简单'
-  },
-  {
-    id: 162,
-    title: 'Vue 的父组件和子组件生命周期执行顺序',
-    tags: ['Vue', '生命周期', '组件'],
-    difficulty: '中等'
-  },
-  {
-    id: 163,
-    title: 'watch 和 computed 有什么区别',
-    tags: ['Vue', 'watch', 'computed'],
-    difficulty: '简单'
-  },
-  {
-    id: 164,
-    title: '谈谈 computed 的机制',
-    tags: ['Vue', 'computed', '原理'],
-    difficulty: '中等'
-  },
-  {
-    id: 165,
-    title: '为什么 computed 不支持异步？',
-    tags: ['Vue', 'computed', '异步'],
-    difficulty: '中等'
-  },
-  {
-    id: 166,
-    title: 'Vue3 DOM Diff 算法',
-    tags: ['Vue3', 'Virtual DOM', 'Diff算法'],
-    difficulty: '困难'
-  },
-  {
-    id: 167,
-    title: 'Vue3 的最长递增子序列算法作用',
-    tags: ['Vue3', '算法', 'Diff'],
-    difficulty: '困难'
-  },
-  {
-    id: 168,
-    title: 'vue3 中 ref 和 reactive 的区别',
-    tags: ['Vue3', '响应式', 'Composition API'],
-    difficulty: '中等'
-  },
-  {
-    id: 169,
-    title: 'vue3 区分 ref 和 reactive 的必要性',
-    tags: ['Vue3', '响应式', '设计原理'],
-    difficulty: '中等'
-  },
-  {
-    id: 170,
-    title: 'Vue 响应式 Observer 如何实现',
-    tags: ['Vue', '响应式', '原理'],
-    difficulty: '困难'
-  },
-  {
-    id: 171,
-    title: 'vue3 为什么要用 proxy 替代 defineProperty',
-    tags: ['Vue3', 'Proxy', '响应式'],
-    difficulty: '中等'
-  },
-  {
-    id: 172,
-    title: '什么是虚拟DOM',
-    tags: ['Vue', '虚拟DOM', '原理'],
-    difficulty: '中等'
-  },
-  {
-    id: 173,
-    title: 'vue2的生命周期',
-    tags: ['Vue2', '生命周期'],
-    difficulty: '简单'
-  },
-  {
-    id: 174,
-    title: 'vue3生命周期',
-    tags: ['Vue3', '生命周期', 'Composition API'],
-    difficulty: '简单'
-  },
-  {
-    id: 175,
-    title: 'watch怎么深度监听对象变化',
-    tags: ['Vue', 'watch', '深度监听'],
-    difficulty: '中等'
-  },
-  {
-    id: 176,
-    title: 'vue2删除数组用delete',
-    tags: ['Vue2', '数组', '响应式'],
-    difficulty: '中等'
-  },
-  {
-    id: 177,
-    title: 'Vue3.0编译做了哪些优化',
-    tags: ['Vue3', '编译优化', '性能'],
-    difficulty: '困难'
-  },
-  {
-    id: 178,
-    title: 'Vue3.0新特性——Composition API',
-    tags: ['Vue3', 'Composition API', '新特性'],
-    difficulty: '中等'
-  },
-  {
-    id: 179,
-    title: 'vue要做权限管理该怎么做',
-    tags: ['Vue', '权限管理', '实践'],
-    difficulty: '中等'
-  },
-  {
-    id: 180,
-    title: 'vue项目脚手架',
-    tags: ['Vue', '脚手架', '工程化'],
-    difficulty: '简单'
-  },
-  {
-    id: 181,
-    title: 'Vue-Router 3.x hash模式和history模式',
-    tags: ['Vue Router', '路由模式', '实践'],
-    difficulty: '中等'
-  },
-  {
-    id: 182,
-    title: 'Vue3.5更新 - Props声明',
-    tags: ['Vue3.5', 'Props', '新特性'],
-    difficulty: '中等'
-  },
-  {
-    id: 183,
-    title: 'Vue3.5更新 - useTemplate',
-    tags: ['Vue3.5', 'useTemplate', '新特性'],
-    difficulty: '中等'
-  },
-  {
-    id: 184,
-    title: 'Vue3.5更新 - watch的默认行为',
-    tags: ['Vue3.5', 'watch', '新特性'],
-    difficulty: '中等'
-  }
-])
 
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
+
 
 // 难度颜色映射
 const getDifficultyType = (difficulty: string) => {
@@ -346,12 +146,12 @@ const handleRowClick = (row: Topic) => {
 
 // 添加检查代码确保数据初始化
 onMounted(() => {
-  console.log('Vue生态题目组件已加载', topicList.value)
+  console.log('Vue生态题目组件已加载', topicList.values)
 })
 
 const route = useRoute()
-const isDev = process.env.NODE_ENV === 'development'
-const routeInfo = computed(() => JSON.stringify(route, null, 2))
+// const isDev = process.env.NODE_ENV === 'development'
+// const routeInfo = computed(() => JSON.stringify(route, null, 2))
 
 onMounted(() => {
   console.log('Vue topic component mounted', route)
@@ -433,5 +233,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style> 

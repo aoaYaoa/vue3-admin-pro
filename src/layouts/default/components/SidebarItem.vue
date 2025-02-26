@@ -38,31 +38,11 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, markRaw } from 'vue'
 import path from 'path-browserify'
 import * as ItemModule from './Item.vue'
 import * as LinkModule from './Link.vue'
-import { getIconComponent } from '@/router/menus' // 导入图标组件函数
-import { 
-  HomeFilled, 
-  Setting, 
-  User, 
-  List,
-  InfoFilled,
-  Cpu,
-  Refresh,
-  Monitor,
-  Basketball,
-  Box,
-  DataAnalysis,
-  Briefcase,
-  Document as DocumentIcon,
-  Collection,
-  Connection,
-  Menu,
-  Key,
-  Postcard
-} from '@element-plus/icons-vue'
+import * as ElementPlusIcons from '@element-plus/icons-vue'
 
 // 使用 TypeScript 类型
 interface Route {
@@ -76,27 +56,17 @@ interface Route {
   children?: Route[];
 }
 
-// 添加一个辅助函数来获取图标组件
-const getIconComponent = (icon: any) => {
-  // 如果图标已经是组件对象，直接返回
-  if (typeof icon === 'object') return icon;
+// 获取图标组件
+const getIconComponent = (iconName: string) => {
+  // 转换图标名称格式：kebab-case → PascalCase
+  const formattedName = iconName
+    .replace(/(^\w|-\w)/g, (match) => 
+      match.replace(/-/, '').toUpperCase()
+    )
   
-  // 如果是字符串，转换为组件
-  switch(icon) {
-    case 'HomeFilled': return HomeFilled;
-    case 'Setting': return Setting;
-    case 'User': return User;
-    case 'List': return List;
-    case 'Document': return DocumentIcon;
-    case 'DataAnalysis': return DataAnalysis;
-    case 'Connection': return Connection;
-    case 'Monitor': return Monitor;
-    case 'Cpu': return Cpu;
-    case 'Box': return Box;
-    case 'Collection': return Collection;
-    case 'Briefcase': return Briefcase;
-    default: return DocumentIcon;
-  }
+  console.log('Icon mapping:', iconName, '→', formattedName)
+  
+  return ElementPlusIcons[formattedName as keyof typeof ElementPlusIcons]
 }
 
 // 使用 prop 定义组件属性
@@ -122,7 +92,7 @@ const props = defineProps({
 const onlyOneChild = ref<Route | null>(null)
 
 // 判断是否只有一个子路由
-const hasOneShowingChild = (children = [], parent) => {
+const hasOneShowingChild = (children: any[] = [], parent: any) => {
   if (!children) {
     children = [];
   }
@@ -152,7 +122,7 @@ const hasOneShowingChild = (children = [], parent) => {
 }
 
 // 解析路径
-const resolvePath = (routePath) => {
+const resolvePath = (routePath: string) => {
   // 如果路径为空，使用基础路径（这对空子路由很重要）
   if (!routePath) return props.basePath;
   
@@ -171,7 +141,7 @@ const resolvePath = (routePath) => {
 }
 
 // 如果需要特定的排序规则，可以添加一个排序函数
-const sortRoutes = (routes) => {
+const sortRoutes = (routes: any[]) => {
   // 复制路由数组，避免修改原数组
   const sortedRoutes = [...routes]
   

@@ -74,13 +74,18 @@
           <div class="topic-content">
             <div class="topic-question">
               <h3>{{ currentTopic.title }}</h3>
-              <p class="topic-description">此题目的详细解答正在准备中...</p>
             </div>
             
             <el-divider content-position="left">参考答案</el-divider>
             
             <div class="topic-answer">
-              <p>解答内容正在编写中...</p>
+              <div v-if="currentTopic.answer" v-html="renderMarkdown(currentTopic.answer)" class="markdown-content"></div>
+              <p v-else>暂无参考答案</p>
+              
+              <div v-if="currentTopic.code" class="code-example">
+                <el-divider content-position="left">代码示例</el-divider>
+                <CodeBlock :code="currentTopic.code" language="javascript" />
+              </div>
             </div>
           </div>
         </div>
@@ -91,203 +96,30 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+// import { Search } from '@element-plus/icons-vue'
+import { topicList } from './data'
+import { renderMarkdown } from '@/utils/markdown-parser'
+import { CodeBlock } from '@/components'
+import { ElDivider } from 'element-plus'
 
 interface Topic {
   id: number
   title: string
   tags: string[]
-  difficulty: string
+  difficulty: string,
+  answer?: string,
+  code?: string
 }
-
-// 设计模式题目列表数据
-const topicList = ref<Topic[]>([
-  {
-    id: 244,
-    title: '设计模式是什么',
-    tags: ['设计模式', '基础概念'],
-    difficulty: '简单'
-  },
-  {
-    id: 245,
-    title: '设计模式的意义',
-    tags: ['设计模式', '软件工程'],
-    difficulty: '简单'
-  },
-  {
-    id: 246,
-    title: '什么是 MVC',
-    tags: ['设计模式', 'MVC', '架构模式'],
-    difficulty: '中等'
-  },
-  {
-    id: 247,
-    title: '什么是 MVVM',
-    tags: ['设计模式', 'MVVM', '架构模式'],
-    difficulty: '中等'
-  },
-  {
-    id: 248,
-    title: '有了 MVC 为什么要有 MVVM',
-    tags: ['设计模式', 'MVC', 'MVVM', '架构演进'],
-    difficulty: '中等'
-  },
-  {
-    id: 249,
-    title: '实现一个 MVVM 示例',
-    tags: ['设计模式', 'MVVM', '实现'],
-    difficulty: '困难'
-  },
-  {
-    id: 250,
-    title: '面向对象基本特性',
-    tags: ['面向对象', 'OOP', '基础概念'],
-    difficulty: '简单'
-  },
-  {
-    id: 251,
-    title: '面向对象的设计原则',
-    tags: ['面向对象', '设计原则', 'SOLID'],
-    difficulty: '中等'
-  },
-  {
-    id: 252,
-    title: '单例模式（Singleton Pattern）',
-    tags: ['设计模式', '创建型模式', '单例'],
-    difficulty: '中等'
-  },
-  {
-    id: 253,
-    title: '工厂模式（Factory Pattern）',
-    tags: ['设计模式', '创建型模式', '工厂'],
-    difficulty: '中等'
-  },
-  {
-    id: 254,
-    title: '建造者模式（Builder Pattern）',
-    tags: ['设计模式', '创建型模式', '建造者'],
-    difficulty: '中等'
-  },
-  {
-    id: 255,
-    title: '原型模式（Prototype Pattern）',
-    tags: ['设计模式', '创建型模式', '原型'],
-    difficulty: '中等'
-  },
-  {
-    id: 256,
-    title: '适配器模式（Adapter Pattern）',
-    tags: ['设计模式', '结构型模式', '适配器'],
-    difficulty: '中等'
-  },
-  {
-    id: 257,
-    title: '装饰者模式（Decorator Pattern）',
-    tags: ['设计模式', '结构型模式', '装饰者'],
-    difficulty: '中等'
-  },
-  {
-    id: 258,
-    title: '观察者模式（Observer Pattern）',
-    tags: ['设计模式', '行为型模式', '观察者'],
-    difficulty: '中等'
-  },
-  {
-    id: 259,
-    title: '策略模式（Strategy Pattern）',
-    tags: ['设计模式', '行为型模式', '策略'],
-    difficulty: '中等'
-  },
-  {
-    id: 260,
-    title: '命令模式（Command Pattern）',
-    tags: ['设计模式', '行为型模式', '命令'],
-    difficulty: '中等'
-  },
-  {
-    id: 261,
-    title: '状态模式（State Pattern）',
-    tags: ['设计模式', '行为型模式', '状态'],
-    difficulty: '中等'
-  },
-  {
-    id: 262,
-    title: '访问者模式（Visitor Pattern）',
-    tags: ['设计模式', '行为型模式', '访问者'],
-    difficulty: '困难'
-  },
-  {
-    id: 263,
-    title: '模板方法模式（Template Method Pattern）',
-    tags: ['设计模式', '行为型模式', '模板方法'],
-    difficulty: '中等'
-  },
-  {
-    id: 264,
-    title: '中介者模式（Mediator Pattern）',
-    tags: ['设计模式', '行为型模式', '中介者'],
-    difficulty: '中等'
-  },
-  {
-    id: 265,
-    title: '备忘录模式（Memento Pattern）',
-    tags: ['设计模式', '行为型模式', '备忘录'],
-    difficulty: '中等'
-  },
-  {
-    id: 266,
-    title: '解释器模式（Interpreter Pattern）',
-    tags: ['设计模式', '行为型模式', '解释器'],
-    difficulty: '困难'
-  },
-  {
-    id: 267,
-    title: '享元模式（Flyweight Pattern）',
-    tags: ['设计模式', '结构型模式', '享元'],
-    difficulty: '中等'
-  },
-  {
-    id: 268,
-    title: '责任链模式（Chain of Responsibility Pattern）',
-    tags: ['设计模式', '行为型模式', '责任链'],
-    difficulty: '中等'
-  },
-  {
-    id: 269,
-    title: '桥接模式（Bridge Pattern）',
-    tags: ['设计模式', '结构型模式', '桥接'],
-    difficulty: '中等'
-  },
-  {
-    id: 270,
-    title: '组合模式（Composite Pattern）',
-    tags: ['设计模式', '结构型模式', '组合'],
-    difficulty: '中等'
-  },
-  {
-    id: 271,
-    title: '迭代器模式（Iterator Pattern）',
-    tags: ['设计模式', '行为型模式', '迭代器'],
-    difficulty: '中等'
-  },
-  {
-    id: 272,
-    title: '代理模式（Proxy Pattern）',
-    tags: ['设计模式', '结构型模式', '代理'],
-    difficulty: '中等'
-  }
-])
-
 // 搜索功能
 const searchText = ref('')
 const filteredTopics = computed(() => {
-  if (!searchText.value) return topicList.value
+  if (!searchText.value) return topicList
   
   const keyword = searchText.value.toLowerCase()
-  return topicList.value.filter(
-    topic => 
+  return topicList.filter(
+    (topic: Topic) => 
       topic.title.toLowerCase().includes(keyword) || 
-      topic.tags.some(tag => tag.toLowerCase().includes(keyword))
+      topic.tags.some((tag: string) => tag.toLowerCase().includes(keyword))
   )
 })
 
@@ -386,5 +218,43 @@ h2 {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   overflow-x: auto;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f5f7fa;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f5f7fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 </style> 
