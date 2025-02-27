@@ -24,11 +24,11 @@ const route = useRoute()
 
 <style lang="scss" scoped>
 .app-main {
-  min-height: calc(100vh - 50px - 40px);
-  width: 100%;
-  position: relative;
-  // overflow: auto;
-  // padding: 20px;
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  background-color: var(--bg-color);
+  height: calc(100vh - var(--navbar-height) - var(--footer-height));
   box-sizing: border-box;
 
   :deep(.el-card) {
@@ -40,23 +40,18 @@ const route = useRoute()
   :deep(.el-card__body) {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 20px !important;
   }
 }
 
-/* 页面切换动画 */
+/* 调整过渡效果 */
 .fade-transform-enter-active,
 .fade-transform-leave-active {
-  transition: all 0.3s;
+  transition: opacity 0.2s ease;
 }
 
-.fade-transform-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
+.fade-transform-enter-from,
 .fade-transform-leave-to {
   opacity: 0;
-  transform: translateX(-30px);
 }
-</style> 
+</style>
