@@ -1,0 +1,64 @@
+ # 开发环境
+node_modules/
+dist/
+*.local
+.env.local
+.env.*.local
+
+# 编辑器
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 测试
+coverage/
+.nyc_output/
+
+# 构建
+.cache/
+.temp/
+**/__snapshots__/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+.env
+.env.production
+.env.development
+
+# 特殊文件
+.eslintcache
+.stylelintcache
+*.code-workspace
+
+# 本地调试
+mock/
+src/mock/
+
+# 文档
+docs/
+CHANGELOG.md
+
+# 包管理
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 可选忽略
+# src/assets/icons/ # 自动生成的图标文件
+# .husky/          # Git hooks
